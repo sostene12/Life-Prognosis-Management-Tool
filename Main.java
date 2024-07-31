@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
 
         // Initialize user store with admin user if it doesn't exist
-        callBashScript("initialize_user_store.sh");
+        callBashScript("user-manager.sh", "initialize_user_store");
 
         while (true) {
             if (currentUser == null) {
@@ -69,12 +69,6 @@ public class Main {
             System.out.println("Incorrect email or password.");
             return null;
         }
-    }
-
-    private static void completeRegistration() {
-        System.out.print("Enter UUID: ");
-        String uuid = Main.getUserInput();
-        callBashScript("complete_registration.sh", uuid);
     }
 
     private static void adminMenu() {
@@ -139,12 +133,13 @@ public class Main {
         }
     }
 
-    public static String callBashScript(String scriptName, String... args) {
+    public static String callBashScript(String scriptName, String option, String... args) {
         StringBuilder output = new StringBuilder();
         try {
             // Prepare command
             List<String> command = new ArrayList<>();
             command.add("./" + scriptName);
+            command.add(option);
             for (String arg : args) {
                 command.add(arg);
             }

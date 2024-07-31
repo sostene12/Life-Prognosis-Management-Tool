@@ -37,7 +37,7 @@ public class Admin implements User {
         System.out.print("Enter patient's email: ");
         String email = Main.getUserInput();
         String uuid = Main.generateUUID();
-        String result = Main.callBashScript("register_patient.sh", email, uuid);
+        String result = Main.callBashScript("user-manager.sh", "register_patient", email, uuid);
         System.out.println(result);
     }
 }

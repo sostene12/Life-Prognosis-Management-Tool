@@ -16,5 +16,5 @@ if $uuid_exists; then
     exit 0
 else
     echo 0 # uuid does not exists
-    exit 1
+    exit 0
 fi

@@ -44,9 +44,9 @@ public class Patient implements User {
         System.out.print("Enter UUID: ");
         String uuid = Main.getUserInput();
 
-        int uuidCheckResult = Integer.parseInt(Main.callBashScript("check_uuid.sh", uuid));
+        String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid);
 
-        if (uuidCheckResult == 0) {
+        if (uuidCheckResult.equals("1")) {
             System.out.println("Error: UUID does not exist.");
             return;
         }
@@ -83,8 +83,7 @@ public class Patient implements User {
         System.out.print("Enter password: ");
         String password = Main.getUserInput();
 
-
-        String result = Main.callBashScript("complete_registration.sh", uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
+        String result = Main.callBashScript("user-manager.sh", "complete_registration",  uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
         System.out.println(result);
     }
 }
