@@ -21,12 +21,12 @@ public class Admin implements User {
     public UserRoles getUserRole() { return userRole; }
 
     public boolean login(String email, String password) {
-        // Implement login logic
+        // login logic
         return this.email.equals(email) && this.password.equals(password);
     }
 
     public void logout() {
-        // Implement logout logic
+        // logout logic
     }
 
     public User viewProfile() {
