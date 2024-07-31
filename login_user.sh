@@ -13,6 +13,5 @@ while IFS=: read -r firstname lastname stored_email uuid role stored_hashed_pass
         exit 0
     fi
 done < "user-store.txt"
-
-# If user not found or password doesn't match, exit with error
+echo "null"
 exit 1

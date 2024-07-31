@@ -21,6 +21,7 @@ public class Admin implements User {
     public UserRoles getUserRole() { return userRole; }
 
     public boolean login(String email, String password) {
+        // Password should be hashed before comparison
         return this.email.equals(email) && this.password.equals(password);
     }
 
@@ -34,22 +35,9 @@ public class Admin implements User {
 
     public void initializeRegistration() {
         System.out.print("Enter patient's email: ");
-        String email = getUserInput();
-        String uuid = generateUUID();
-        System.out.println("Patient registration initiated with UUID: " + uuid);
-        callBashScript("register_patient.sh", email, uuid);
-    }
-
-    private String getUserInput() {
-        // Implement logic to get user input
-        return null;
-    }
-
-    private void callBashScript(String scriptName, String... args) {
-        // Implement logic to call Bash script and handle output
-    }
-
-    private String generateUUID() {
-        return java.util.UUID.randomUUID().toString();
+        String email = Main.getUserInput();
+        String uuid = Main.generateUUID();
+        String result = Main.callBashScript("register_patient.sh", email, uuid);
+        System.out.println(result);
     }
 }
