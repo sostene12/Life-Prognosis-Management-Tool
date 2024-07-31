@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Hash the admin password (for demonstration, not secure)
-admin_password="password123"
+admin_password="pass123"
 hashed_password=$(echo -n "$admin_password" | sha256sum | awk '{print $1}')
 
 # Check if user-store.txt exists

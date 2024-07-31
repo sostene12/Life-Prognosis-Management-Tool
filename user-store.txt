@@ -1,2 +1,0 @@
-hirwa:jc:admin@admin.com:50999632-b94b-4fb4-9f6c-26f1c768c458:Admin:ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f
-null:null:hico:599bf2c0-6243-47d5-bb85-fed520727db3:Patient:null

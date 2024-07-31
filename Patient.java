@@ -40,49 +40,51 @@ public class Patient implements User {
         return this; // Patient profile
     }
 
-    public void completeRegistration() {
+    public static void completeRegistration() {
         System.out.print("Enter UUID: ");
-        String uuid = getUserInput();
+        String uuid = Main.getUserInput();
+
+        int uuidCheckResult = Integer.parseInt(Main.callBashScript("check_uuid.sh", uuid));
+
+        if (uuidCheckResult == 0) {
+            System.out.println("Error: UUID does not exist.");
+            return;
+        }
+        System.out.print("Enter Your firstname: ");
+        String firstName = Main.getUserInput();
+        System.out.print("Enter Your lastname: ");
+        String lastName = Main.getUserInput();
+
+
         System.out.print("Enter date of birth (YYYY-MM-DD): ");
-        String dob = getUserInput();
+        String dob = Main.getUserInput();
         System.out.print("Are you HIV positive? (yes/no): ");
-        String hivStatus = getUserInput();
+        String hivStatus = Main.getUserInput();
         boolean hasHIV = hivStatus.equalsIgnoreCase("yes");
+
+        String diagnosisDate = "null";
+        boolean isOnART = false;
+        String startedART = "null";
 
         if (hasHIV) {
             System.out.print("Enter diagnosis date (YYYY-MM-DD): ");
-            String diagnosisDate = getUserInput();
+            diagnosisDate = Main.getUserInput();
             System.out.print("Are you on ART drugs? (yes/no): ");
-            String artStatus = getUserInput();
-            boolean isOnART = artStatus.equalsIgnoreCase("yes");
+            String artStatus = Main.getUserInput();
+            isOnART = artStatus.equalsIgnoreCase("yes");
             if (isOnART) {
                 System.out.print("Enter the date you started ART (YYYY-MM-DD): ");
-                String startedART = getUserInput();
+                startedART = Main.getUserInput();
             }
         }
 
         System.out.print("Enter country ISO code: ");
-        String countryISO = getUserInput();
+        String countryISO = Main.getUserInput();
         System.out.print("Enter password: ");
-        String password = getUserInput();
+        String password = Main.getUserInput();
 
-        // Hash the password (for demonstration, not secure)
-        String hashedPassword = hashPassword(password);
 
-        //callBashScript("complete_registration.sh", uuid, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, hashedPassword);
-    }
-
-    private String getUserInput() {
-        // Implement logic to get user input
-        return null;
-    }
-
-    private void callBashScript(String scriptName, String... args) {
-        // Implement logic to call Bash script and handle output
-    }
-
-    private String hashPassword(String password) {
-        // Implement password hashing logic
-        return null;
+        String result = Main.callBashScript("complete_registration.sh", uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
+        System.out.println(result);
     }
 }
