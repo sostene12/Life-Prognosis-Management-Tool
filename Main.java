@@ -1,11 +1,171 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static User currentUser = null;
+
     public static void main(String[] args) {
-        UserManager userManager = new UserManager();
         Scanner scanner = new Scanner(System.in);
 
-        // Application logic for user interaction
-        // E.g., login, registration, etc.
+        // Initialize user store with admin user if it doesn't exist
+        callBashScript("initialize_user_store.sh");
+
+        while (true) {
+            if (currentUser == null) {
+                System.out.println("1. Login User");
+                System.out.println("2. Complete Registration");
+                System.out.println("3. Exit");
+                System.out.print("Choose an option: ");
+                int option = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (option) {
+                    case 1:
+                        currentUser = loginUser(scanner);
+                        break;
+                    case 2:
+                        completeRegistration(scanner);
+                        break;
+                    case 3:
+                        System.exit(0);
+                    default:
+                        System.out.println("Invalid option");
+                }
+            } else {
+                if (currentUser.getUserRole() == UserRoles.ADMIN) {
+                    adminMenu(scanner);
+                } else {
+                    patientMenu(scanner, (Patient) currentUser);
+                }
+            }
+        }
+    }
+
+    private static User loginUser(Scanner scanner) {
+        System.out.print("Enter your email: ");
+        String email = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        // Call Bash script to authenticate user
+        String userData = callBashScript("login_user.sh", email, password);
+        System.out.println(userData);
+        if (userData != null) {
+
+            String[] parts = userData.split(":");
+
+            String userRole = parts[0];
+            String firstName = parts[1];
+            String lastName = parts[2];
+
+            if (userRole.equals("Admin")) {
+                return new Admin(firstName, lastName, email, password);
+            } else {
+                return new Patient(firstName, lastName, email, password);
+            }
+        } else {
+            System.out.println("Login failed.");
+            return null;
+        }
+    }
+
+    private static void completeRegistration(Scanner scanner) {
+        System.out.print("Enter UUID: ");
+        String uuid = scanner.nextLine();
+        callBashScript("complete_registration.sh", uuid);
+    }
+
+    private static void adminMenu(Scanner scanner) {
+        while (true) {
+            System.out.println("Admin Menu:");
+            System.out.println("1. Initiate Patient Registration");
+            System.out.println("2. Export User Data");
+            System.out.println("3. Export Analytics");
+            System.out.println("4. Logout");
+            System.out.print("Choose an option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (option) {
+                case 1:
+                    ((Admin) currentUser).initializeRegistration();
+                    break;
+//                case 2:
+//                    ((Admin) currentUser).exportUserData();
+//                    break;
+//                case 3:
+//                    ((Admin) currentUser).exportAnalytics();
+//                    break;
+                case 4:
+                    currentUser = null;
+                    System.out.println("Logged out.");
+                    return; // Return to the main loop
+                default:
+                    System.out.println("Invalid option");
+            }
+        }
+    }
+
+    private static void patientMenu(Scanner scanner, Patient patient) {
+        while (true) {
+            System.out.println("Patient Menu:");
+            System.out.println("1. View Profile");
+            System.out.println("2. Update Profile");
+            System.out.println("3. View Lifespan");
+            System.out.println("4. Logout");
+            System.out.print("Choose an option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (option) {
+                case 1:
+                    patient.viewProfile();
+                    break;
+//                case 2:
+//                    patient.updateProfile();
+//                    break;
+//                case 3:
+//                    patient.viewLifespan();
+//                    break;
+                case 4:
+                    currentUser = null;
+                    System.out.println("Logged out.");
+                    return; // Return to the main loop
+                default:
+                    System.out.println("Invalid option");
+            }
+        }
+    }
+
+    private static String callBashScript(String scriptName, String... args) {
+        StringBuilder output = new StringBuilder();
+        try {
+            // Prepare command
+            List<String> command = new ArrayList<>();
+            command.add("./" + scriptName);
+            for (String arg : args) {
+                command.add(arg);
+            }
+
+            // Execute command
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            System.err.println("Error calling Bash script: " + e.getMessage());
+        }
+        return output.toString().trim();
     }
 }

@@ -2,7 +2,7 @@ public class Admin implements User {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
+    private String password; // Should be hashed
     private UserRoles userRole;
 
     public Admin(String firstName, String lastName, String email, String password) {
@@ -21,27 +21,35 @@ public class Admin implements User {
     public UserRoles getUserRole() { return userRole; }
 
     public boolean login(String email, String password) {
-        // login logic
         return this.email.equals(email) && this.password.equals(password);
     }
 
     public void logout() {
-        // logout logic
+        System.out.println("Admin logged out.");
     }
 
     public User viewProfile() {
         return this; // Admin profile
     }
 
-    public void initializeRegistration(String email) {
-        // Logic to initialize patient registration
+    public void initializeRegistration() {
+        System.out.print("Enter patient's email: ");
+        String email = getUserInput();
+        String uuid = generateUUID();
+        System.out.println("Patient registration initiated with UUID: " + uuid);
+        callBashScript("register_patient.sh", email, uuid);
     }
 
-    public void exportUserData() {
-        // Logic to export user data
+    private String getUserInput() {
+        // Implement logic to get user input
+        return null;
     }
 
-    public void exportAnalytics() {
-        // Logic to export analytics
+    private void callBashScript(String scriptName, String... args) {
+        // Implement logic to call Bash script and handle output
+    }
+
+    private String generateUUID() {
+        return java.util.UUID.randomUUID().toString();
     }
 }

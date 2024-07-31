@@ -1,34 +1,17 @@
 #!/bin/bash
 
-# File to store user data
-USER_STORE="user-store.txt"
-PATIENT_DATA="patients.txt"
-
-# Variables to track login status and user role
-is_logged_in=false
-user_role=""
-current_patient_email=""
-
-# Function to register a new user
-register_user() {
-    echo "Registering new user..."
-    read -p "Enter user's email: " email
-    UUID=$(uuidgen)
-
-    # Check if the email already exists
-    if grep -q "$email" "$USER_STORE"; then
-        echo "Email already registered. Please use a different email."
-        return
-    fi
-
-    # Store user info (email and UUID)
-    echo "$email:$UUID:Patient" >> "$USER_STORE"
-    echo "User registered successfully with UUID: $UUID"
+# Function to initiate patient registration by admin
+initiate_registration() {
+    echo "Initiating patient registration..."
+    read -p "Enter patient's email: " email
+    uuid=$(uuidgen)
+    echo "$email:$uuid:Patient:" >> "user-store.txt"
+    echo "Patient registration initiated with UUID: $uuid"
 }
 
-# Function for patient registration completion
+# Function for patient to complete registration
 complete_registration() {
-    echo "Completing registration for patient..."
+    echo "Completing patient registration..."
     read -p "Enter UUID: " uuid
     read -p "Enter first name: " first_name
     read -p "Enter last name: " last_name
@@ -49,12 +32,13 @@ complete_registration() {
     # Hash the password (for demonstration, not secure)
     hashed_password=$(echo -n "$password" | sha256sum | awk '{print $1}')
 
-    # Store patient data
-    echo "$uuid:$first_name:$last_name:$dob:$has_hiv:$diagnosis_date:$on_art:$start_art:$country_iso:$hashed_password" >> "$PATIENT_DATA"
+    # Update the patient's information in user-store.txt
+    sed -i "/$uuid/s/:Patient:/:" "user-store.txt"
+    echo "$uuid:$first_name:$last_name:$dob:$has_hiv:$diagnosis_date:$on_art:$start_art:$country_iso:$hashed_password" >> "user-store.txt"
     echo "Patient registration completed successfully."
 }
 
-# Function to login a user
+# Function for user login
 login_user() {
     echo "Logging in..."
     read -p "Enter your email: " email
@@ -63,81 +47,31 @@ login_user() {
     # Hash the input password for comparison
     hashed_password=$(echo -n "$password" | sha256sum | awk '{print $1}')
 
-    # Check if user exists and password matches
-    while IFS=: read -r stored_email stored_hashed_password; do
+    # Check if user exists in user-store.txt and password matches
+    while IFS=: read -r stored_email uuid role first_name last_name stored_hashed_password; do
         if [[ "$stored_email" == "$email" && "$stored_hashed_password" == "$hashed_password" ]]; then
-            echo "Login successful!"
-            is_logged_in=true
-            user_role="Patient"
-            current_patient_email="$email"
-            return
+            echo "$role:$first_name:$last_name"  # Return user data
+            exit 0
         fi
-    done < "$PATIENT_DATA"
+    done < "user-store.txt"
 
     echo "Login failed: Invalid email or password."
-}
-
-# Function to display admin menu
-admin_menu() {
-    while true; do
-        echo "Admin Menu:"
-        echo "1. Initialize Patient Registration"
-        echo "2. Export User Data"
-        echo "3. Export Analytical Data"
-        echo "4. Logout"
-        read -p "Choose an option: " option
-
-        case $option in
-            1) register_user ;;
-            2) echo "Export User Data is not implemented yet." ;;
-            3) echo "VExport Analytical Data is not implemented yet." ;;
-            4) is_logged_in=false; user_role=""; echo "Logged out." ; break ;;
-            *) echo "Invalid option" ;;
-        esac
-    done
-}
-
-# Function to display patient menu
-patient_menu() {
-    while true; do
-        echo "Patient Menu:"
-        echo "1. Complete Patient Registration"
-        echo "2. View Lifespan"
-        echo "3. View Profile"
-        echo "4. Logout"
-        read -p "Choose an option: " option
-
-        case $option in
-            1) complete_registration ;;
-            2) echo "view lifespan is not implemented yet." ;;
-            3) echo "Viewing profile is not implemented yet." ;;
-            4) is_logged_in=false; user_role=""; echo "Logged out." ; break ;;
-            *) echo "Invalid option" ;;
-        esac
-    done
+    exit 1
 }
 
 # Main menu
 while true; do
-    if [ "$is_logged_in" = false ]; then
-        echo "Welcome to Life Prognosis Management Tool"
-        echo "_________________________________________"
-        echo "1. Login"
-        echo "2. Complete Registration"
-        echo "3. Exit"
-        read -p "Choose an option: " option
+    echo "1. Initiate Patient Registration"
+    echo "2. Complete Patient Registration"
+    echo "3. Login User"
+    echo "4. Exit"
+    read -p "Choose an option: " option
 
-        case $option in
-            1) login_user ;;
-            2) complete_registration ;;
-            3) exit ;;
-            *) echo "Invalid option" ;;
-        esac
-    else
-        if [ "$user_role" == "Admin" ]; then
-            admin_menu
-        elif [ "$user_role" == "Patient" ]; then
-            patient_menu
-        fi
-    fi
+    case $option in
+        1) initiate_registration ;;
+        2) complete_registration ;;
+        3) login_user ;;
+        4) exit ;;
+        *) echo "Invalid option" ;;
+    esac
 done

@@ -1,2 +1,1 @@
-hicode250:7883a43e-4195-4e18-b2fa-82f1302e92b2:Admin
-sostene@gmail.com:3d684fde-544d-4704-b3c6-2c7436d9b84c:Patient
+hirwa:jc:admin@admin.com:50999632-b94b-4fb4-9f6c-26f1c768c458:Admin:ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f
