@@ -38,7 +38,7 @@ public abstract class User {
     }
 
     public static void logout(){
-        System.out.println("Admin logged out.");
+        System.out.println("Logged out.");
     }
 
     public abstract User viewProfile();
