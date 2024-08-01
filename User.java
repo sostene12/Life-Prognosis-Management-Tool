@@ -37,7 +37,7 @@ public abstract class User {
         return Main.callBashScript("user-manager.sh", "login_user", email, password);
     }
 
-    public void logout(){
+    public static void logout(){
         System.out.println("Admin logged out.");
     }
 

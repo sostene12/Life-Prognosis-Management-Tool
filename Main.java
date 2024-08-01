@@ -20,17 +20,17 @@ public class Main {
                 System.out.println("2. Complete Registration");
                 System.out.println("3. Exit");
                 System.out.print("___________________________\nChoose an option: ");
-                int option = Integer.parseInt(Main.getUserInput());
+                String option = Main.getUserInput();
                 System.out.println("_______________________");
 
                 switch (option) {
-                    case 1:
+                    case "1":
                         currentUser = loginUser();
                         break;
-                    case 2:
+                    case "2":
                         Patient.completeRegistration();
                         break;
-                    case 3:
+                    case "3":
                         System.exit(0);
                     default:
                         System.out.println("Invalid option");
@@ -81,22 +81,22 @@ public class Main {
             System.out.println("3. Export Analytics");
             System.out.println("4. Logout");
             System.out.print("_______________________\nChoose an option: ");
-            int option = Integer.parseInt(Main.getUserInput());
+            String option = Main.getUserInput();
             System.out.println("_______________________");
 
             switch (option) {
-                case 1:
+                case "1":
                     ((Admin) currentUser).initializeRegistration();
                     break;
-                case 2:
+                case "2":
                     ((Admin) currentUser).exportUserData();
                     break;
-                case 3:
+                case "3":
                     ((Admin) currentUser).exportAnalytics();
                     break;
-                case 4:
+                case "4":
                     currentUser = null;
-                    System.out.println("Logged out.");
+                    User.logout();
                     return; // Return to the main loop
                 default:
                     System.out.println("Invalid option");
@@ -113,22 +113,22 @@ public class Main {
             System.out.println("3. View Lifespan");
             System.out.println("4. Logout");
             System.out.print("_______________________\nChoose an option: ");
-            int option = Integer.parseInt(Main.getUserInput());
+            String option = Main.getUserInput();
             System.out.println("_______________________");
 
             switch (option) {
-                case 1:
+                case "1":
                     patient.viewProfile();
                     break;
-                case 2:
+                case "2":
                     patient.updateProfile();
                     break;
-                case 3:
+                case "3":
                     patient.viewLifespan();
                     break;
-                case 4:
+                case "4":
                     currentUser = null;
-                    System.out.println("Logged out.");
+                    User.logout();
                     return; // Return to the main loop
                 default:
                     System.out.println("Invalid option");
@@ -172,5 +172,4 @@ public class Main {
     public static  String generateUUID() {
         return java.util.UUID.randomUUID().toString();
     }
-
 }

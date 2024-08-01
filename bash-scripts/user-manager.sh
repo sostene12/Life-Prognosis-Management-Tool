@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# Get current date and time
+timestamp=$(date +"%Y-%m-%d_%H:%M:%S")
+
+# Files
 USER_STORE="data-store/user-store.txt"
 PATIENT_STORE="data-store/patient.txt"
+USER_DATA_CSV="exports/user_data_$timestamp.csv"
+ANALYTICS_CSV="exports/analytics_$timestamp.csv"
 
 # Function to initialize user-store.txt with an admin user
 initialize_user_store() {
@@ -28,8 +34,6 @@ hash_password() {
 check_uuid_email() {
     local uuid=$1
     local email=$2
-
-    # Check if UUID exists and linked with email
     local uuid_exists=false
     local is_registered
     while IFS=: read -r _ _ stored_email stored_uuid _ _ was_registered; do
@@ -65,6 +69,17 @@ complete_registration() {
     local countryISO=$9
     local password=${10}
     local registered=1
+
+    # Validate inputs
+    validate_firstName "$firstName"
+    validate_lastName "$lastName"
+    validate_dob "$dob"
+    validate_hasHIV "$hasHIV"
+    validate_diagnosisDate "$diagnosisDate"
+    validate_isOnART "$isOnART"
+    validate_startedART "$startedART"
+    validate_countryISO "$countryISO"
+    validate_password "$password"
 
     # Check if UUID exists
     local hashed_password
@@ -136,6 +151,28 @@ register_patient() {
     fi
 }
 
+export_user_data() {
+    local input_file=$1 # user-store file
+    local output_file=$2
+
+    # Write the CSV header
+    echo "FirstName,LastName,Email,UUID,Role" > "$output_file"
+
+    echo "Data exported to $output_file"
+}
+
+# Function to export analytical data to CSV format
+export_analytics() {
+    local patient_file=$1 # patient file
+    local user_store_file=$2 # user-store file
+    local output_file=$3
+
+    # Write the CSV header
+    echo "FirstName,LastName,Email,DOB,HIVStatus,DiagnosisDate,ARTStatus,ARTStartDate,CountryISO" > "$output_file"
+
+    echo "Data exported to $output_file"
+}
+
 # Main logic to dispatch function calls based on parameters
 case $1 in
     "initialize_user_store")
@@ -148,8 +185,12 @@ case $1 in
         register_patient "$2" "$3" ;;
     "check_uuid")
         check_uuid_email "$2" "$3" ;;
+    "export_user_data")
+        export_user_data "$USER_STORE" "$USER_DATA_CSV" ;;
+    "export_analytics")
+        export_analytics "$PATIENT_STORE" "$USER_STORE" "$ANALYTICS_CSV" ;;
     *)
-        echo "Invalid command. Use 'initialize_user_store', 'complete_registration', 'login_user', 'register_patient', or 'check_uuid'."
+        echo "Invalid command."
         exit 1
         ;;
 esac

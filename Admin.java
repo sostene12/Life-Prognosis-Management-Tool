@@ -16,10 +16,14 @@ public class Admin extends User {
     }
 
     public void exportUserData(){
+        String result = Main.callBashScript("user-manager.sh", "export_user_data");
+        System.out.println(result);
         return;
     }
 
     public void exportAnalytics() {
+        String result = Main.callBashScript("user-manager.sh", "export_analytics");
+        System.out.println(result);
         return;
     }
 }
