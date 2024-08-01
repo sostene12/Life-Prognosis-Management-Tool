@@ -1,11 +1,6 @@
 import java.util.Date;
 
-public class Patient implements User {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password; // Should be hashed
-    private UserRoles userRole;
+public class Patient extends User {
     private Date dateOfBirth;
     private boolean hasHIV;
     private Date diagnosisDate;
@@ -14,30 +9,7 @@ public class Patient implements User {
     private String countryISO;
 
     public Patient(String firstName, String lastName, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password; // Should be hashed
-        this.userRole = UserRoles.PATIENT;
-    }
-
-    // Implement User interface methods
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
-    public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public UserRoles getUserRole() { return userRole; }
-
-    public boolean login(String email, String password) {
-        return this.email.equals(email) && this.password.equals(password);
-    }
-
-    public void logout() {
-        System.out.println("Patient logged out.");
-    }
-
-    public User viewProfile() {
-        return this; // Patient profile
+        super(firstName, lastName, email, password, UserRoles.PATIENT);
     }
 
     public static void completeRegistration() {
@@ -85,5 +57,17 @@ public class Patient implements User {
 
         String result = Main.callBashScript("user-manager.sh", "complete_registration",  uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
         System.out.println(result);
+    }
+
+    public User viewProfile() {
+        return this; // Patient profile
+    }
+
+    public void updateProfile(){
+        return;
+    }
+
+    public void viewLifespan(){
+        return;
     }
 }

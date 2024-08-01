@@ -15,7 +15,8 @@ public class Main {
 
         while (true) {
             if (currentUser == null) {
-                System.out.println("1. Login User");
+                System.out.println("______________________________\nLife Prognosis Management Tool \n______________________________");
+                System.out.println("1. Login");
                 System.out.println("2. Complete Registration");
                 System.out.println("3. Exit");
                 System.out.print("___________________________\nChoose an option: ");
@@ -36,9 +37,9 @@ public class Main {
                 }
             } else {
                 if (currentUser.getUserRole() == UserRoles.ADMIN) {
-                    adminMenu();
+                    adminMenu((Admin) currentUser);
                 } else {
-                    Main.patientMenu((Patient) currentUser);
+                    patientMenu((Patient) currentUser);
                 }
             }
         }
@@ -51,7 +52,7 @@ public class Main {
         String password = Main.getUserInput();
 
         // Call Bash script to authenticate user
-        String userData = callBashScript("login_user.sh", email, password);
+        String userData = User.login(email, password);
 
         if (!userData.equals("null")){
             String[] parts = userData.split(":");
@@ -71,9 +72,10 @@ public class Main {
         }
     }
 
-    private static void adminMenu() {
+    private static void adminMenu(Admin admin) {
         while (true) {
-            System.out.println("Admin Menu:");
+            System.out.println("______________________________\nLife Prognosis Management Tool \n______________________________");
+            System.out.println("Hello, "+admin.getFirstName());
             System.out.println("1. Initiate Patient Registration");
             System.out.println("2. Export User Data");
             System.out.println("3. Export Analytics");
@@ -86,12 +88,12 @@ public class Main {
                 case 1:
                     ((Admin) currentUser).initializeRegistration();
                     break;
-//                case 2:
-//                    ((Admin) currentUser).exportUserData();
-//                    break;
-//                case 3:
-//                    ((Admin) currentUser).exportAnalytics();
-//                    break;
+                case 2:
+                    ((Admin) currentUser).exportUserData();
+                    break;
+                case 3:
+                    ((Admin) currentUser).exportAnalytics();
+                    break;
                 case 4:
                     currentUser = null;
                     System.out.println("Logged out.");
@@ -104,7 +106,8 @@ public class Main {
 
     public static void patientMenu(Patient patient) {
         while (true) {
-            System.out.println("Patient Menu:");
+            System.out.println("______________________________\nLife Prognosis Management Tool \n______________________________");
+            System.out.println("Hello, "+patient.getFirstName());
             System.out.println("1. View Profile");
             System.out.println("2. Update Profile");
             System.out.println("3. View Lifespan");
@@ -117,12 +120,12 @@ public class Main {
                 case 1:
                     patient.viewProfile();
                     break;
-//                case 2:
-//                    patient.updateProfile();
-//                    break;
-//                case 3:
-//                    patient.viewLifespan();
-//                    break;
+                case 2:
+                    patient.updateProfile();
+                    break;
+                case 3:
+                    patient.viewLifespan();
+                    break;
                 case 4:
                     currentUser = null;
                     System.out.println("Logged out.");
@@ -138,7 +141,7 @@ public class Main {
         try {
             // Prepare command
             List<String> command = new ArrayList<>();
-            command.add("./" + scriptName);
+            command.add("./bash-scripts/" + scriptName);
             command.add(option);
             for (String arg : args) {
                 command.add(arg);

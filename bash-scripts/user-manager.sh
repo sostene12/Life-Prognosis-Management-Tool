@@ -1,17 +1,20 @@
 #!/bin/bash
 
+USER_STORE="data-store/user-store.txt"
+PATIENT_STORE="data-store/patient.txt"
+
 # Function to initialize user-store.txt with an admin user
 initialize_user_store() {
     local admin_password="pass123"
     local hashed_password
     hashed_password=$(hash_password "$admin_password")
 
-    if [ ! -f user-store.txt ]; then
-        echo "Creating user-store.txt and initializing with admin user."
-        echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password" > user-store.txt
+    if [ ! -f $USER_STORE ]; then
+        echo "Creating $USER_STORE and initializing with admin user."
+        echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password" > $USER_STORE
         echo "Admin user initialized."
     else
-        echo "user-store.txt already exists."
+        echo "$USER_STORE already exists."
     fi
 }
 
@@ -32,7 +35,7 @@ check_uuid() {
             uuid_exists=true
             break
         fi
-    done < "user-store.txt"
+    done < $USER_STORE
 
     if $uuid_exists; then
         echo "0"  # UUID exists
@@ -61,9 +64,9 @@ complete_registration() {
     [ "$diagnosisDate" = "null" ] && diagnosisDate=""
     [ "$startedART" = "null" ] && startedART=""
 
-    echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> "patient.txt"
+    echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> $PATIENT_STORE
 
-    # Update user-store.txt
+    # Update user-store
     awk -v uuid="$uuid" -v hashed_password="$hashed_password" \
         -v firstName="$firstName" -v lastName="$lastName" \
         -F: -v OFS=: '
@@ -74,7 +77,7 @@ complete_registration() {
                 $6 = hashed_password;
             }
             print
-        }' user-store.txt > user-store.tmp && mv user-store.tmp user-store.txt
+        }' $USER_STORE > user-store.tmp && mv user-store.tmp $USER_STORE
 
     echo "Registration completed for UUID: $uuid"
     exit 0
@@ -88,12 +91,12 @@ login_user() {
     local hashed_password
     hashed_password=$(hash_password "$password")
 
-    while IFS=: read -r firstname lastname stored_email _ _ role stored_hashed_password; do
+    while IFS=: read -r firstname lastname stored_email _ role stored_hashed_password; do
         if [[ "$stored_email" == "$email" && "$stored_hashed_password" == "$hashed_password" ]]; then
             echo "$role:$firstname:$lastname"
             exit 0
         fi
-    done < "user-store.txt"
+    done < "$USER_STORE"
 
     echo "null"
     exit 0
@@ -111,13 +114,13 @@ register_patient() {
             email_exists=true
             break
         fi
-    done < <(cut -d: -f3 user-store.txt)
+    done < <(cut -d: -f3 $USER_STORE)
 
     if $email_exists; then
         echo "Info: Email already exists."
         exit 0
     else
-        echo "null:null:$email:$uuid:Patient:null" >> "user-store.txt"
+        echo "null:null:$email:$uuid:Patient:null" >> $USER_STORE
         echo "Patient registered with email: $email and UUID: $uuid"
     fi
 }
