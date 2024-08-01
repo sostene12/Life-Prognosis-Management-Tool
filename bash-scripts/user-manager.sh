@@ -9,6 +9,8 @@ PATIENT_STORE="data-store/patient.txt"
 USER_DATA_CSV="exports/user_data_$timestamp.csv"
 ANALYTICS_CSV="exports/analytics_$timestamp.csv"
 
+source bash-scripts/validation-functions.sh
+
 # Function to initialize user-store.txt with an admin user
 initialize_user_store() {
     local admin_password="pass123"
@@ -119,7 +121,7 @@ login_user() {
     local hashed_password
     hashed_password=$(hash_password "$password")
 
-    while IFS=: read -r firstname lastname stored_email _ role stored_hashed_password; do
+    while IFS=: read -r firstname lastname stored_email _ role stored_hashed_password _; do
         if [[ "$stored_email" == "$email" && "$stored_hashed_password" == "$hashed_password" ]]; then
             echo "$role:$firstname:$lastname"
             exit 0

@@ -20,7 +20,7 @@ public class Patient extends User {
         String email = Main.getUserInput();
 
         String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid, email);
-
+         System.out.println(uuidCheckResult);   
         if (uuidCheckResult.equals("1")) {
             System.out.println("Info: Registration already done.");
             return; 
