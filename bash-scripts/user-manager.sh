@@ -41,7 +41,9 @@ check_uuid_email() {
             uuid_exists=true
             
             if [[ "$was_registered" == "1" ]]; then
-                is_registered=1
+                is_registered="1"
+            else
+                is_registered="0"
             fi
             break
         fi
