@@ -16,10 +16,17 @@ public class Patient extends User {
         System.out.print("Enter UUID: ");
         String uuid = Main.getUserInput();
 
-        String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid);
+        System.out.print("Enter Your Email: ");
+        String email = Main.getUserInput();
+
+        String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid, email);
 
         if (uuidCheckResult.equals("1")) {
-            System.out.println("Error: UUID does not exist.");
+            System.out.println("Info: Registration already done.");
+            return;
+        }
+        else if (uuidCheckResult.equals("2")) {
+            System.out.println("Info: Authentication failed.");
             return;
         }
         System.out.print("Enter Your firstname: ");

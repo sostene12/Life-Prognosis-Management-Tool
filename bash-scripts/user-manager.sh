@@ -11,7 +11,7 @@ initialize_user_store() {
 
     if [ ! -f $USER_STORE ]; then
         echo "Creating $USER_STORE and initializing with admin user."
-        echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password" > $USER_STORE
+        echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password:1" > $USER_STORE
         echo "Admin user initialized."
     else
         echo "$USER_STORE already exists."
@@ -24,23 +24,31 @@ hash_password() {
     echo -n "$password" | sha256sum | awk '{print $1}'
 }
 
-# Function to check if UUID exists
-check_uuid() {
+# Function to check if UUID and email exist
+check_uuid_email() {
     local uuid=$1
+    local email=$2
 
-    # Check if UUID exists
+    # Check if UUID exists and linked with email
     local uuid_exists=false
-    while IFS=: read -r _ _ _ stored_uuid _ _; do
-        if [[ "$stored_uuid" == "$uuid" ]]; then
+    local is_registered
+    while IFS=: read -r _ _ stored_email stored_uuid _ _ was_registered; do
+        if [[ "$stored_uuid" == "$uuid" && "$stored_email" == "$email" ]]; then
             uuid_exists=true
+            
+            if [[ "$was_registered" == "1" ]]; then
+                is_registered=1
+            fi
             break
         fi
     done < $USER_STORE
 
-    if $uuid_exists; then
-        echo "0"  # UUID exists
+    if [[ $uuid_exists && $is_registered == "0" ]]; then
+        echo "0"  # UUID exists and is linked with email
+    elif [[ $uuid_exists && $is_registered == "1" ]]; then
+        echo "1"  # user had completed their registration
     else
-        echo "1"  # UUID does not exist
+        echo "2"  # UUID does not exist or is not linked with email
     fi
 }
 
@@ -56,6 +64,7 @@ complete_registration() {
     local startedART=$8
     local countryISO=$9
     local password=${10}
+    local registered=1
 
     # Check if UUID exists
     local hashed_password
@@ -69,12 +78,14 @@ complete_registration() {
     # Update user-store
     awk -v uuid="$uuid" -v hashed_password="$hashed_password" \
         -v firstName="$firstName" -v lastName="$lastName" \
+        -v registered="$registered" \
         -F: -v OFS=: '
         {
             if ($4 == uuid) {
                 $1 = firstName;
                 $2 = lastName;
                 $6 = hashed_password;
+                $7 = registered
             }
             print
         }' $USER_STORE > user-store.tmp && mv user-store.tmp $USER_STORE
@@ -120,7 +131,7 @@ register_patient() {
         echo "Info: Email already exists."
         exit 0
     else
-        echo "null:null:$email:$uuid:Patient:null" >> $USER_STORE
+        echo "null:null:$email:$uuid:Patient:null:0" >> $USER_STORE
         echo "Patient registered with email: $email and UUID: $uuid"
     fi
 }
@@ -136,7 +147,7 @@ case $1 in
     "register_patient")
         register_patient "$2" "$3" ;;
     "check_uuid")
-        check_uuid "$2" ;;
+        check_uuid_email "$2" "$3" ;;
     *)
         echo "Invalid command. Use 'initialize_user_store', 'complete_registration', 'login_user', 'register_patient', or 'check_uuid'."
         exit 1
