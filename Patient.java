@@ -23,7 +23,7 @@ public class Patient extends User {
 
         if (uuidCheckResult.equals("1")) {
             System.out.println("Info: Registration already done.");
-            return;
+            return; 
         }
         else if (uuidCheckResult.equals("2")) {
             System.out.println("Info: Authentication failed.");
