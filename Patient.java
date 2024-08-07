@@ -163,18 +163,27 @@ public class Patient extends User {
         String newLastName = Main.getUserInput();
         System.out.print("Enter your new DOB (YYYY-MM-DD): ");
         String newDOB = Main.getUserInput();
+
         System.out.print("Enter your new HIV status (yes/no): ");
         String newHIVStatus = Main.getUserInput();
-        System.out.print("Update on diagnosis date:");
-        String newDiagnosisDate = Main.getUserInput();
-        System.out.print("update on ART status (yes/no):");
-        String newARTStatus = Main.getUserInput();
-        System.out.print("Update on day you started ART (YYYY-MM-DD):");
-        String newStartedART = Main.getUserInput();
+
+        String newDiagnosisDate = "null", newARTStatus = "null", newStartedART = "null";
+
+        if (newHIVStatus.equalsIgnoreCase("yes")) {
+            System.out.print("Enter your new diagnosis date (YYYY-MM-DD): ");
+            newDiagnosisDate = Main.getUserInput();
+            System.out.print("Are you on ART drugs? (yes/no): ");
+            newARTStatus = Main.getUserInput();
+            if (newARTStatus.equalsIgnoreCase("yes")) {
+                System.out.print("Enter the date you started ART (YYYY-MM-DD): ");
+                newStartedART = Main.getUserInput();
+            }
+        }
         System.out.print("Enter your new country ISO code: ");
         String newCountryISO = Main.getUserInput();
         System.out.println();
         System.out.println("Updating your profile...");
+        System.out.println();
         String result = Main.callBashScript("update-profile.sh", "update_patient_profile", this.getEmail(),
                 newFirstName,
                 newLastName, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
