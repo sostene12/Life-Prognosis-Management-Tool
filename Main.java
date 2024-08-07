@@ -1,9 +1,15 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Date;
 
 public class Main {
     private static User currentUser = null;
@@ -118,7 +124,9 @@ public class Main {
 
             switch (option) {
                 case "1":
-                    patient.viewProfile();
+                    {
+                        System.out.println(patient.viewProfile().getFirstName());
+                    }
                     break;
                 case "2":
                     patient.updateProfile();
@@ -171,5 +179,62 @@ public class Main {
 
     public static  String generateUUID() {
         return java.util.UUID.randomUUID().toString();
+    }
+
+    public static Date parseDate(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date parsedDate = dateFormat.parse(date);
+            return parsedDate;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    public static int calculateDateDifference(Date initialDate){
+        // Convert Date to LocalDate
+        LocalDate initialLocalDate = initialDate.toInstant()
+                                           .atZone(ZoneId.systemDefault())
+                                           .toLocalDate();
+
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Calculate the period between the two dates
+        Period period = Period.between(initialLocalDate, today);
+
+        // Get the difference in years
+        int diff = period.getYears();
+
+        // Check if there are any remaining months or days to round up
+        if (period.getMonths() > 0 || period.getDays() > 0) {
+            diff++;
+        }
+        
+        return diff;
+    }
+
+    public static int calculateDateDifference(Date initialDate, Date finalDate){
+        // Convert Date to LocalDate
+        LocalDate initialLocalDate = initialDate.toInstant()
+                                           .atZone(ZoneId.systemDefault())
+                                           .toLocalDate();
+
+        LocalDate finalLocalDate = initialDate.toInstant()
+                                           .atZone(ZoneId.systemDefault())
+                                           .toLocalDate();
+
+        // Calculate the period between the two dates
+        Period period = Period.between(initialLocalDate, finalLocalDate);
+
+        // Get the difference in years
+        int diff = period.getYears();
+
+        // Check if there are any remaining months or days to round up
+        if (period.getMonths() > 0 || period.getDays() > 0) {
+            diff++;
+        }
+        
+        return diff;
     }
 }

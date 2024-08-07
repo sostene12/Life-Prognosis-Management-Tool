@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Get current date and time
+CSV_FILE="files/life-expectancy.csv"
 timestamp=$(date +"%Y-%m-%d_%H:%M:%S")
 
 # Files
@@ -8,6 +9,7 @@ USER_STORE="data-store/user-store.txt"
 PATIENT_STORE="data-store/patient.txt"
 USER_DATA_CSV="exports/user_data_$timestamp.csv"
 ANALYTICS_CSV="exports/analytics_$timestamp.csv"
+
 
 source bash-scripts/validation-functions.sh
 
@@ -155,6 +157,41 @@ register_patient() {
     fi
 }
 
+get_uuid() {
+    local email=$1
+    while IFS=: read -r _ _ stored_email stored_uuid _ _ _; do
+        if [[ "$stored_email" == "$email" ]]; then
+            echo "$stored_uuid"
+            break
+        fi
+    done < "$USER_STORE"
+}
+
+
+get_patient_info() {
+    local uuid=$1
+    while IFS=: read -r stored_uuid dateOfBirth hasHIV diagnosisDate isOnART startedART countryISO; do
+        if [[ "$stored_uuid" == "$uuid" ]]; then
+            echo "$dateOfBirth:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO"
+            exit 0
+        fi
+    done < "$PATIENT_STORE"
+
+    echo "null"
+    exit 0
+}
+
+get_country_lifespan(){
+    local iso_code=$1
+    local result=$(awk -F, -v iso="$iso_code" '$4 == iso || $5 == iso {print $7}' "$CSV_FILE")
+
+    if [[ -z "$result" ]]; then
+        echo 0
+    else
+        echo $result
+    fi
+}
+
 export_user_data() {
     local input_file=$1 # user-store file
     local output_file=$2
@@ -193,6 +230,12 @@ case $1 in
         export_user_data "$USER_STORE" "$USER_DATA_CSV" ;;
     "export_analytics")
         export_analytics "$PATIENT_STORE" "$USER_STORE" "$ANALYTICS_CSV" ;;
+    "get_uuid")
+        get_uuid "$2";;
+    "get_patient_info")
+        get_patient_info "$2";;
+    "get_country_lifespan")
+        get_country_lifespan "$2";;
     *)
         echo "Invalid command."
         exit 1
