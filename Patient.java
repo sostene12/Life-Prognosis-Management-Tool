@@ -80,7 +80,7 @@ public class Patient extends User {
         String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid, email);
         if (uuidCheckResult.equals("1")) {
             System.out.println("Info: Registration already done.");
-            return; 
+            return;
         } else if (uuidCheckResult.equals("2")) {
             System.out.println("Info: Authentication failed.");
             return;
@@ -121,7 +121,8 @@ public class Patient extends User {
         String password = Main.getUserInput();
 
         // Register patient via bash script
-        String result = Main.callBashScript("user-manager.sh", "complete_registration", uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
+        String result = Main.callBashScript("user-manager.sh", "complete_registration", uuid, firstName, lastName, dob,
+                hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
         System.out.println(result);
     }
 
@@ -129,7 +130,7 @@ public class Patient extends User {
     public void viewProfile() {
         // Retrieve patient UUID using email
         String uuid = Main.callBashScript("user-manager.sh", "get_uuid", getEmail());
-        
+
         // Get patient information from the system
         String patientInformation = Main.callBashScript("user-manager.sh", "get_patient_info", uuid);
         String[] patientInformationParts = patientInformation.split(":");
@@ -141,7 +142,7 @@ public class Patient extends User {
         setIsOnART(patientInformationParts[3]);
         setStartedART(Main.parseDate(patientInformationParts[4]));
         setCountryISO(patientInformationParts[5]);
-        
+
         // Display patient profile information
         System.out.println("My Profile\n______________________________\n");
         System.out.println("Firstname: " + getFirstName());
@@ -155,16 +156,37 @@ public class Patient extends User {
         System.out.println("_______________________");
     }
 
-    // Method to update profile, not implemented yet
     public void updateProfile() {
-        return;
+        System.out.print("Enter your new first name: ");
+        String newFirstName = Main.getUserInput();
+        System.out.print("Enter your new last name: ");
+        String newLastName = Main.getUserInput();
+        System.out.print("Enter your new DOB (YYYY-MM-DD): ");
+        String newDOB = Main.getUserInput();
+        System.out.print("Enter your new HIV status (yes/no): ");
+        String newHIVStatus = Main.getUserInput();
+        System.out.print("Update on diagnosis date:");
+        String newDiagnosisDate = Main.getUserInput();
+        System.out.print("update on ART status (yes/no):");
+        String newARTStatus = Main.getUserInput();
+        System.out.print("Update on day you started ART (YYYY-MM-DD):");
+        String newStartedART = Main.getUserInput();
+        System.out.print("Enter your new country ISO code: ");
+        String newCountryISO = Main.getUserInput();
+        System.out.println();
+        System.out.println("Updating your profile...");
+        String result = Main.callBashScript("update-profile.sh", "update_patient_profile", this.getEmail(),
+                newFirstName,
+                newLastName, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
+        System.out.println(result);
     }
 
-    // Calculates the estimated lifespan of the patient based on HIV status and ART treatment
+    // Calculates the estimated lifespan of the patient based on HIV status and ART
+    // treatment
     public Double calculateLifespan() {
         final Float factor = 0.9f; // lifespan reduction factor due to delayed ART
         final int maxNotOnART = 5; // maximum expected lifespan without ART (in years)
-        
+
         // Retrieve patient information
         String uuid = Main.callBashScript("user-manager.sh", "get_uuid", this.getEmail());
         String patientInformation = Main.callBashScript("user-manager.sh", "get_patient_info", uuid);
@@ -179,7 +201,8 @@ public class Patient extends User {
         setCountryISO(patientInformationParts[5]);
 
         // Get country-specific life expectancy and calculate default lifespan
-        Float countryLifeExpectancy = Float.parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
+        Float countryLifeExpectancy = Float
+                .parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
         Float defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
 
         // Calculate lifespan based on HIV status and ART treatment
@@ -201,6 +224,7 @@ public class Patient extends User {
     // Displays the estimated lifespan of the patient
     public void viewLifespan() {
         Double lifespan = this.calculateLifespan();
-        System.out.println("______________________________\nYour Estimated Lifespan is " + lifespan + " years\n______________________________");
+        System.out.println("______________________________\nYour Estimated Lifespan is " + lifespan
+                + " years\n______________________________");
     }
 }
