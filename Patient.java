@@ -157,9 +157,9 @@ public class Patient extends User {
     }
 
     public void updateProfile() {
-        System.out.print("Enter your new first name: ");
+        System.out.print("Enter your new first name (Leave it if you want): ");
         String newFirstName = Main.getUserInput();
-        System.out.print("Enter your new last name: ");
+        System.out.print("Enter your new last name (Leave it if you want): ");
         String newLastName = Main.getUserInput();
         System.out.print("Enter your new DOB (YYYY-MM-DD): ");
         String newDOB = Main.getUserInput();

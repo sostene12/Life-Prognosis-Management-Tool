@@ -3,7 +3,6 @@
 USER_STORE="data-store/user-store.txt"
 PATIENT_STORE="data-store/patient.txt"
 
-# This script is used to view and update the profile of a user.
 update_patient_profile(){
     local email=$1
     local firstName=$2
@@ -15,7 +14,7 @@ update_patient_profile(){
     local startedART=$8
     local countryISO=$9
 
-    # Validate the input (simplified validation, replace with proper functions if available)
+    # Validate the input (simplified validation)
     [[ -z "$firstName" ]] && { echo "Error: First name is required"; exit 1; }
     [[ -z "$lastName" ]] && { echo "Error: Last name is required"; exit 1; }
     [[ -z "$dob" ]] && { echo "Error: Date of birth is required"; exit 1; }
@@ -31,12 +30,14 @@ update_patient_profile(){
         exit 1
     fi
 
-    # Extract the user's uuid
+    # Extract the user's uuid and other existing data
     local uuid
-    uuid=$(echo "$user_line" | cut -d: -f4)
+    local existing_password
+    local existing_registered
+    IFS=':' read -r _ _ _ uuid _ existing_password existing_registered <<< "$user_line"
 
-    # Update user-store.txt
-    sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:/" "$USER_STORE"
+    # Update user-store.txt while preserving existing data
+    sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:$existing_password:$existing_registered/" "$USER_STORE"
 
     # Update or add entry in patient.txt
     if grep -q "^$uuid:" "$PATIENT_STORE"; then

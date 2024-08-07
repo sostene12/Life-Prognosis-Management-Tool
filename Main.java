@@ -69,6 +69,7 @@ public class Main {
             String userRole = parts[0];
             String firstName = parts[1];
             String lastName = parts[2];
+            // System.out.println("USER DATA"+userData);
 
             // Create and return user object based on role
             if (userRole.equals("Admin")) {
