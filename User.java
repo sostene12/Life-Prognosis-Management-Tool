@@ -15,14 +15,29 @@ public abstract class User {
         this.userRole = userRole;
     }
 
+
+    // --------------------------------------
+
+
+
+    // --------------------------------------
+
     // Getter for first name
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     // Getter for last name
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     // Getter for email

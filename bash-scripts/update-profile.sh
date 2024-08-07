@@ -14,13 +14,6 @@ update_patient_profile(){
     local startedART=$8
     local countryISO=$9
 
-    # Validate the input (simplified validation)
-    [[ -z "$firstName" ]] && { echo "Error: First name is required"; exit 1; }
-    [[ -z "$lastName" ]] && { echo "Error: Last name is required"; exit 1; }
-    [[ -z "$dob" ]] && { echo "Error: Date of birth is required"; exit 1; }
-    [[ "$hasHIV" != "yes" && "$hasHIV" != "no" ]] && { echo "Error: HIV status must be 'yes' or 'no'"; exit 1; }
-    [[ -z "$countryISO" ]] && { echo "Error: Country ISO is required"; exit 1; }
-
     # Check if the user exists
     local user_line
     user_line=$(grep ":$email:" "$USER_STORE")
@@ -39,10 +32,33 @@ update_patient_profile(){
     # Update user-store.txt while preserving existing data
     sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:$existing_password:$existing_registered/" "$USER_STORE"
 
-    # Update or add entry in patient.txt
-    if grep -q "^$uuid:" "$PATIENT_STORE"; then
+    # Get current patient data
+    local current_patient_data
+    current_patient_data=$(grep "^$uuid:" "$PATIENT_STORE")
+
+    if [[ -n "$current_patient_data" ]]; then
+        IFS=':' read -r _ current_dob current_hasHIV current_diagnosisDate current_isOnART current_startedART current_countryISO <<< "$current_patient_data"
+
+        # Use current values if new values are empty
+        dob=${dob:-$current_dob}
+        hasHIV=${hasHIV:-$current_hasHIV}
+        countryISO=${countryISO:-$current_countryISO}
+
+        if [[ "$hasHIV" == "yes" ]]; then
+            diagnosisDate=${diagnosisDate:-$current_diagnosisDate}
+            isOnART=${isOnART:-$current_isOnART}
+            startedART=${startedART:-$current_startedART}
+        else
+            # Clear HIV-related data if status changed to "no"
+            diagnosisDate="null"
+            isOnART="null"
+            startedART="null"
+        fi
+
+        # Update patient.txt
         sed -i "s/^$uuid:.*$/$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO/" "$PATIENT_STORE"
     else
+        # Add new entry if not exists
         echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> "$PATIENT_STORE"
     fi
 
