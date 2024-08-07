@@ -41,5 +41,5 @@ public abstract class User {
         System.out.println("Logged out.");
     }
 
-    public abstract User viewProfile();
+    public abstract void viewProfile();
 }

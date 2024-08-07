@@ -124,9 +124,7 @@ public class Main {
 
             switch (option) {
                 case "1":
-                    {
-                        System.out.println(patient.viewProfile().getFirstName());
-                    }
+                    patient.viewProfile();
                     break;
                 case "2":
                     patient.updateProfile();
@@ -193,9 +191,7 @@ public class Main {
 
     public static int calculateDateDifference(Date initialDate){
         // Convert Date to LocalDate
-        LocalDate initialLocalDate = initialDate.toInstant()
-                                           .atZone(ZoneId.systemDefault())
-                                           .toLocalDate();
+        LocalDate initialLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         // Get today's date
         LocalDate today = LocalDate.now();
@@ -216,13 +212,8 @@ public class Main {
 
     public static int calculateDateDifference(Date initialDate, Date finalDate){
         // Convert Date to LocalDate
-        LocalDate initialLocalDate = initialDate.toInstant()
-                                           .atZone(ZoneId.systemDefault())
-                                           .toLocalDate();
-
-        LocalDate finalLocalDate = initialDate.toInstant()
-                                           .atZone(ZoneId.systemDefault())
-                                           .toLocalDate();
+        LocalDate initialLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate finalLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         // Calculate the period between the two dates
         Period period = Period.between(initialLocalDate, finalLocalDate);
