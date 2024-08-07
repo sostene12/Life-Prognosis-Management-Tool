@@ -7,20 +7,21 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Date;
 
 public class Main {
     private static User currentUser = null;
 
     public static void main(String[] args) {
-
         // Initialize user store with admin user if it doesn't exist
         callBashScript("user-manager.sh", "initialize_user_store");
 
+        // Main loop for the application
         while (true) {
             if (currentUser == null) {
+                // Display main menu options
                 System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
                 System.out.println("1. Login");
                 System.out.println("2. Complete Registration");
@@ -29,6 +30,7 @@ public class Main {
                 String option = Main.getUserInput();
                 System.out.println("_______________________");
 
+                // Process user input
                 switch (option) {
                     case "1":
                         currentUser = loginUser();
@@ -37,11 +39,12 @@ public class Main {
                         Patient.completeRegistration();
                         break;
                     case "3":
-                        System.exit(0);
+                        System.exit(0); // Exit the application
                     default:
                         System.out.println("Invalid option");
                 }
             } else {
+                // Redirect to appropriate menu based on user role
                 if (currentUser.getUserRole() == UserRoles.ADMIN) {
                     adminMenu((Admin) currentUser);
                 } else {
@@ -60,13 +63,14 @@ public class Main {
         // Call Bash script to authenticate user
         String userData = User.login(email, password);
 
-        if (!userData.equals("null")){
+        if (!userData.equals("null")) {
+            // Parse user data returned from the script
             String[] parts = userData.split(":");
-
             String userRole = parts[0];
             String firstName = parts[1];
             String lastName = parts[2];
 
+            // Create and return user object based on role
             if (userRole.equals("Admin")) {
                 return new Admin(firstName, lastName, email, password);
             } else {
@@ -80,6 +84,7 @@ public class Main {
 
     private static void adminMenu(Admin admin) {
         while (true) {
+            // Display admin menu options
             System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
             System.out.println("Hello, "+admin.getFirstName());
             System.out.println("1. Initiate Patient Registration");
@@ -90,6 +95,7 @@ public class Main {
             String option = Main.getUserInput();
             System.out.println("_______________________");
 
+            // Process admin menu input
             switch (option) {
                 case "1":
                     ((Admin) currentUser).initializeRegistration();
@@ -112,6 +118,7 @@ public class Main {
 
     public static void patientMenu(Patient patient) {
         while (true) {
+            // Display patient menu options
             System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
             System.out.println("Hello, "+patient.getFirstName());
             System.out.println("1. View Profile");
@@ -122,6 +129,7 @@ public class Main {
             String option = Main.getUserInput();
             System.out.println("_______________________");
 
+            // Process patient menu input
             switch (option) {
                 case "1":
                     patient.viewProfile();
@@ -145,7 +153,7 @@ public class Main {
     public static String callBashScript(String scriptName, String option, String... args) {
         StringBuilder output = new StringBuilder();
         try {
-            // Prepare command
+            // Prepare command to execute the Bash script
             List<String> command = new ArrayList<>();
             command.add("./bash-scripts/" + scriptName);
             command.add(option);
@@ -158,6 +166,7 @@ public class Main {
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
+            // Read output from the script
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -175,21 +184,22 @@ public class Main {
         return scanner.nextLine(); // Read input from the user
     }
 
-    public static  String generateUUID() {
-        return java.util.UUID.randomUUID().toString();
+    public static String generateUUID() {
+        return java.util.UUID.randomUUID().toString(); // Generate a unique identifier
     }
 
     public static Date parseDate(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
+            // Parse the date string into a Date object
             Date parsedDate = dateFormat.parse(date);
             return parsedDate;
         } catch (ParseException e) {
-            return null;
+            return null; // Return null if parsing fails
         }
     }
 
-    public static int calculateDateDifference(Date initialDate){
+    public static int calculateDateDifference(Date initialDate) {
         // Convert Date to LocalDate
         LocalDate initialLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -199,10 +209,8 @@ public class Main {
         // Calculate the period between the two dates
         Period period = Period.between(initialLocalDate, today);
 
-        // Get the difference in years
+        // Get the difference in years and round up if there are remaining months or days
         int diff = period.getYears();
-
-        // Check if there are any remaining months or days to round up
         if (period.getMonths() > 0 || period.getDays() > 0) {
             diff++;
         }
@@ -210,18 +218,16 @@ public class Main {
         return diff;
     }
 
-    public static int calculateDateDifference(Date initialDate, Date finalDate){
+    public static int calculateDateDifference(Date initialDate, Date finalDate) {
         // Convert Date to LocalDate
         LocalDate initialLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate finalLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate finalLocalDate = finalDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         // Calculate the period between the two dates
         Period period = Period.between(initialLocalDate, finalLocalDate);
 
-        // Get the difference in years
+        // Get the difference in years and round up if there are remaining months or days
         int diff = period.getYears();
-
-        // Check if there are any remaining months or days to round up
         if (period.getMonths() > 0 || period.getDays() > 0) {
             diff++;
         }

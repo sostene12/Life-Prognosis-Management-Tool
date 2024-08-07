@@ -1,10 +1,12 @@
 public abstract class User {
+    // User attributes
     private String firstName;
     private String lastName;
     private String email;
     private String password;
     private UserRoles userRole;
 
+    // Constructor for User class, initializes user attributes
     public User(String firstName, String lastName, String email, String password, UserRoles userRole) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -13,33 +15,41 @@ public abstract class User {
         this.userRole = userRole;
     }
 
+    // Getter for first name
     public String getFirstName() {
         return firstName;
     }
 
+    // Getter for last name
     public String getLastName() {
         return lastName;
     }
 
+    // Getter for email
     public String getEmail() {
         return email;
     }
 
+    // Getter for password
     public String getPassword() {
         return password;
     }
 
+    // Getter for user role
     public UserRoles getUserRole() {
         return userRole;
     }
 
-    public static String login(String email, String password){
+    // Static method for user login, calls a bash script to authenticate
+    public static String login(String email, String password) {
         return Main.callBashScript("user-manager.sh", "login_user", email, password);
     }
 
-    public static void logout(){
+    // Static method for logging out
+    public static void logout() {
         System.out.println("Logged out.");
     }
 
+    // Abstract method to be implemented by subclasses for viewing profile
     public abstract void viewProfile();
 }

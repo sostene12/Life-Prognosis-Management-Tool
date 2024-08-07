@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# Get current date and time
+# Define constants for file paths and timestamps
 CSV_FILE="files/life-expectancy.csv"
 timestamp=$(date +"%Y-%m-%d_%H:%M:%S")
 
-# Files
+# Define file paths for user and patient data
 USER_STORE="data-store/user-store.txt"
 PATIENT_STORE="data-store/patient.txt"
 USER_DATA_CSV="exports/user_data_$timestamp.csv"
 ANALYTICS_CSV="exports/analytics_$timestamp.csv"
 
-
+# Source external validation functions
 source bash-scripts/validation-functions.sh
 
 # Function to initialize user-store.txt with an admin user
@@ -19,6 +19,7 @@ initialize_user_store() {
     local hashed_password
     hashed_password=$(hash_password "$admin_password")
 
+    # Check if the user store file exists, if not, create it and add an admin user
     if [ ! -f $USER_STORE ]; then
         echo "Creating $USER_STORE and initializing with admin user."
         echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password:1" > $USER_STORE
@@ -28,13 +29,14 @@ initialize_user_store() {
     fi
 }
 
-# Function to hash a password using SHA-256
+# Function to hash a password using OpenSSL
 hash_password() {
     local password=$1
-    echo -n "$password" | sha256sum | awk '{print $1}'
+    echo -n "$password" | openssl dgst -sha256 | awk '{print $2}'
 }
 
-# Function to check if UUID and email exist
+
+# Function to check if a UUID and email exist in the user store
 check_uuid_email() {
     local uuid=$1
     local email=$2
@@ -53,16 +55,17 @@ check_uuid_email() {
         fi
     done < $USER_STORE
 
+    # Return status based on UUID and email existence
     if [[ $uuid_exists && $is_registered == "0" ]]; then
         echo "0"  # UUID exists and is linked with email
     elif [[ $uuid_exists && $is_registered == "1" ]]; then
-        echo "1"  # user had completed their registration
+        echo "1"  # User has completed registration
     else
         echo "2"  # UUID does not exist or is not linked with email
     fi
 }
 
-# Function to complete registration
+# Function to complete registration for a patient
 complete_registration() {
     local uuid=$1
     local firstName=$2
@@ -87,16 +90,17 @@ complete_registration() {
     validate_countryISO "$countryISO"
     validate_password "$password"
 
-    # Check if UUID exists
+    # Prepare to update user and patient data
     local hashed_password
     hashed_password=$(hash_password "$password")
 
     [ "$diagnosisDate" = "null" ] && diagnosisDate=""
     [ "$startedART" = "null" ] && startedART=""
 
+    # Append patient information to the patient store
     echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> $PATIENT_STORE
 
-    # Update user-store
+    # Update user store with registration details
     awk -v uuid="$uuid" -v hashed_password="$hashed_password" \
         -v firstName="$firstName" -v lastName="$lastName" \
         -v registered="$registered" \
@@ -115,7 +119,7 @@ complete_registration() {
     exit 0
 }
 
-# Function to login user
+# Function to authenticate a user
 login_user() {
     local email=$1
     local password=$2
@@ -134,12 +138,12 @@ login_user() {
     exit 0
 }
 
-# Function to check if email exists and register a patient
+# Function to register a new patient
 register_patient() {
     local email=$1
     local uuid=$2
 
-    # Check if email already exists
+    # Check if the email already exists
     local email_exists=false
     while IFS=: read -r stored_email; do
         if [[ "$stored_email" == "$email" ]]; then
@@ -157,6 +161,7 @@ register_patient() {
     fi
 }
 
+# Function to get UUID for a given email
 get_uuid() {
     local email=$1
     while IFS=: read -r _ _ stored_email stored_uuid _ _ _; do
@@ -167,7 +172,7 @@ get_uuid() {
     done < "$USER_STORE"
 }
 
-
+# Function to get patient information by UUID
 get_patient_info() {
     local uuid=$1
     while IFS=: read -r stored_uuid dateOfBirth hasHIV diagnosisDate isOnART startedART countryISO; do
@@ -181,6 +186,7 @@ get_patient_info() {
     exit 0
 }
 
+# Function to get country lifespan from CSV
 get_country_lifespan(){
     local iso_code=$1
     local result=$(awk -F, -v iso="$iso_code" '$4 == iso || $5 == iso {print $7}' "$CSV_FILE")
@@ -192,6 +198,7 @@ get_country_lifespan(){
     fi
 }
 
+# Function to export user data to a CSV file
 export_user_data() {
     local input_file=$1 # user-store file
     local output_file=$2
@@ -202,7 +209,7 @@ export_user_data() {
     echo "Data exported to $output_file"
 }
 
-# Function to export analytical data to CSV format
+# Function to export analytical data to a CSV file
 export_analytics() {
     local patient_file=$1 # patient file
     local user_store_file=$2 # user-store file
@@ -214,7 +221,7 @@ export_analytics() {
     echo "Data exported to $output_file"
 }
 
-# Main logic to dispatch function calls based on parameters
+# Main logic to dispatch function calls based on command-line arguments
 case $1 in
     "initialize_user_store")
         initialize_user_store ;;
