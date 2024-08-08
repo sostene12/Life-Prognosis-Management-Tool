@@ -22,7 +22,7 @@ initialize_user_store() {
     # Check if the user store file exists, if not, create it and add an admin user
     if [ ! -f $USER_STORE ]; then
         echo "Creating $USER_STORE and initializing with admin user."
-        echo "hirwa:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password:1" > $USER_STORE
+        echo "Admin:jc:admin@admin.com:$(uuidgen):Admin:$hashed_password:1" > $USER_STORE
         echo "Admin user initialized."
     else
         echo "$USER_STORE already exists."
@@ -200,11 +200,24 @@ get_country_lifespan(){
 
 # Function to export user data to a CSV file
 export_user_data() {
-    local input_file=$1 # user-store file
-    local output_file=$2
+    local patient_file=$1
+    local user_store_file=$2
+    local output_file=$3
 
-    # Write the CSV header
-    echo "FirstName,LastName,Email,UUID,Role" > "$output_file"
+    echo "FirstName,LastName,Email,DOB,HIVStatus,DiagnosisDate,ARTStatus,ARTStartDate,CountryISO" > "$output_file"
+
+    declare -A user_details
+    while IFS=: read -r firstname lastname email uuid _ _ _; do
+        user_details["$uuid"]="$firstname,$lastname,$email"
+    done < "$user_store_file"
+
+    while IFS=: read -r uuid dob hiv_status diagnosis_date art_status art_start_date country_iso; do
+        if [ -n "${user_details[$uuid]}" ]; then
+            echo "${user_details[$uuid]},$dob,$hiv_status,$diagnosis_date,$art_status,$art_start_date,$country_iso" >> "$output_file"
+        else
+            echo ",,$uuid,$dob,$hiv_status,$diagnosis_date,$art_status,$art_start_date,$country_iso" >> "$output_file"
+        fi
+    done < "$patient_file"
 
     echo "Data exported to $output_file"
 }
@@ -234,7 +247,7 @@ case $1 in
     "check_uuid")
         check_uuid_email "$2" "$3" ;;
     "export_user_data")
-        export_user_data "$USER_STORE" "$USER_DATA_CSV" ;;
+        export_user_data "$PATIENT_STORE" "$USER_STORE" "$USER_DATA_CSV" ;;
     "export_analytics")
         export_analytics "$PATIENT_STORE" "$USER_STORE" "$ANALYTICS_CSV" ;;
     "get_uuid")

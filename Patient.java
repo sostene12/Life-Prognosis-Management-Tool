@@ -147,6 +147,7 @@ public class Patient extends User {
         System.out.println("Firstname: " + getFirstName());
         System.out.println("Lastname: " + getLastName());
         System.out.println("Email: " + getEmail());
+        System.out.println("Date of birth: " + getDateOfBirth());
         System.out.println("HIV status: " + getHasHIV());
         System.out.println("Diagnosis Date: " + getDiagnosisDate());
         System.out.println("ART status: " + getIsOnART());
@@ -161,8 +162,8 @@ public class Patient extends User {
     }
 
     // Calculates the estimated lifespan of the patient based on HIV status and ART treatment
-    public Double calculateLifespan() {
-        final Float factor = 0.9f; // lifespan reduction factor due to delayed ART
+    public float calculateLifespan() {
+        final float factor = 0.9f; // lifespan reduction factor due to delayed ART
         final int maxNotOnART = 5; // maximum expected lifespan without ART (in years)
         
         // Retrieve patient information
@@ -179,28 +180,33 @@ public class Patient extends User {
         setCountryISO(patientInformationParts[5]);
 
         // Get country-specific life expectancy and calculate default lifespan
-        Float countryLifeExpectancy = Float.parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
-        Float defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
+        float countryLifeExpectancy = Float.parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
+
+        System.out.println(countryLifeExpectancy);
+        System.out.println(getCountryISO());
+        System.out.println(Main.calculateDateDifference(getDateOfBirth()));
+        float defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
 
         // Calculate lifespan based on HIV status and ART treatment
         if (getHasHIV().equals("yes")) {
-            Double calculatedLifespan = null;
+            float calculatedLifespan;
             if (getIsOnART().equals("yes")) {
-                defaultLifeSpan = (float) Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate());
+                defaultLifeSpan = countryLifeExpectancy - (float) Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate());
                 int delayBeforeART = Main.calculateDateDifference(getDiagnosisDate(), getStartedART());
-                calculatedLifespan = defaultLifeSpan * Math.pow(factor, delayBeforeART);
+                System.out.println(defaultLifeSpan+"-"+delayBeforeART+"-"+factor);
+                calculatedLifespan = (float) (defaultLifeSpan * Math.pow(factor, delayBeforeART));
             } else {
-                calculatedLifespan = (double) (maxNotOnART - Main.calculateDateDifference(getDiagnosisDate()));
+                calculatedLifespan = maxNotOnART - Main.calculateDateDifference(getDiagnosisDate());
             }
             return calculatedLifespan;
         } else {
-            return (double) defaultLifeSpan;
+            return defaultLifeSpan;
         }
     }
 
     // Displays the estimated lifespan of the patient
     public void viewLifespan() {
-        Double lifespan = this.calculateLifespan();
+        float lifespan = this.calculateLifespan();
         System.out.println("______________________________\nYour Estimated Lifespan is " + lifespan + " years\n______________________________");
     }
 }
