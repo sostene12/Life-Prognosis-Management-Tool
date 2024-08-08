@@ -206,15 +206,8 @@ public class Main {
         // Get today's date
         LocalDate today = LocalDate.now();
 
-        // Calculate the period between the two dates
-        Period period = Period.between(initialLocalDate, today);
-
-        // Get the difference in years and round up if there are remaining months or days
-        int diff = period.getYears();
-        if (period.getMonths() > 0 || period.getDays() > 0) {
-            diff++;
-        }
-        
+        // Calculate the period between the years
+        int diff = today.getYear() - initialLocalDate.getYear();
         return diff;
     }
 
@@ -223,15 +216,8 @@ public class Main {
         LocalDate initialLocalDate = initialDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate finalLocalDate = finalDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-        // Calculate the period between the two dates
-        Period period = Period.between(initialLocalDate, finalLocalDate);
-
-        // Get the difference in years and round up if there are remaining months or days
-        int diff = period.getYears();
-        if (period.getMonths() > 0 || period.getDays() > 0) {
-            diff++;
-        }
-        
+        // Calculate the period between the years
+        int diff = finalLocalDate.getYear() - initialLocalDate.getYear();
         return diff;
     }
 }

@@ -181,25 +181,26 @@ public class Patient extends User {
 
         // Get country-specific life expectancy and calculate default lifespan
         float countryLifeExpectancy = Float.parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
-
-        System.out.println(countryLifeExpectancy);
-        System.out.println(getCountryISO());
-        System.out.println(Main.calculateDateDifference(getDateOfBirth()));
-        float defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
+        float defaultLifeSpan;
 
         // Calculate lifespan based on HIV status and ART treatment
         if (getHasHIV().equals("yes")) {
             float calculatedLifespan;
             if (getIsOnART().equals("yes")) {
-                defaultLifeSpan = countryLifeExpectancy - (float) Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate());
+                // calculating the number of years that was remaining to reach the lifespan before testing HIV Positive
+                defaultLifeSpan = countryLifeExpectancy - (float) Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate()); 
+
+                // calculating the number of years delayed before taking ART
                 int delayBeforeART = Main.calculateDateDifference(getDiagnosisDate(), getStartedART());
-                System.out.println(defaultLifeSpan+"-"+delayBeforeART+"-"+factor);
-                calculatedLifespan = (float) (defaultLifeSpan * Math.pow(factor, delayBeforeART));
+                
+                // calculate lifespan by applying the formula
+                calculatedLifespan = (float) (defaultLifeSpan * factor * Math.pow(factor, delayBeforeART));
             } else {
                 calculatedLifespan = maxNotOnART - Main.calculateDateDifference(getDiagnosisDate());
             }
             return calculatedLifespan;
         } else {
+            defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
             return defaultLifeSpan;
         }
     }
