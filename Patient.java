@@ -158,7 +158,65 @@ public class Patient extends User {
 
     // Method to update profile, not implemented yet
     public void updateProfile() {
-        return;
+
+        // Retrieve patient UUID using email
+        String uuid = Main.callBashScript("user-manager.sh", "get_uuid", getEmail());
+
+        // Get patient information from the system
+        String patientInformation = Main.callBashScript("user-manager.sh", "get_patient_info", uuid);
+        String[] patientInformationParts = patientInformation.split(":");
+
+        System.out.println("Current information (press Enter to keep current value):");
+
+        System.out.print("Enter your new first name: ");
+        String newFirstName = Main.getUserInput();
+        newFirstName = newFirstName.isEmpty() ? getFirstName() : newFirstName;
+
+        System.out.print("Enter your new last name: ");
+        String newLastName = Main.getUserInput();
+        newLastName = newLastName.isEmpty() ? getLastName() : newLastName;
+
+        System.out.print("Enter your new DOB (YYYY-MM-DD): ");
+        String newDOB = Main.getUserInput();
+        newDOB = newDOB.isEmpty() ? patientInformationParts[0] : newDOB;
+
+        System.out.print("Enter your new HIV status (yes/no): ");
+        String newHIVStatus = Main.getUserInput();
+        newHIVStatus = newHIVStatus.isEmpty() ? patientInformationParts[1] : newHIVStatus;
+
+        String newDiagnosisDate = "", newARTStatus = "", newStartedART = "";
+
+        if (newHIVStatus.equalsIgnoreCase("yes")) {
+            System.out.print("Enter your new diagnosis date (YYYY-MM-DD): ");
+            newDiagnosisDate = Main.getUserInput();
+            newDiagnosisDate = newDiagnosisDate.isEmpty() ? patientInformationParts[2] : newDiagnosisDate;
+
+            System.out.print("Are you on ART drugs? (yes/no): ");
+            newARTStatus = Main.getUserInput();
+            newARTStatus = newARTStatus.isEmpty() ? patientInformationParts[3] : newARTStatus;
+
+            if (newARTStatus.equalsIgnoreCase("yes")) {
+                System.out.print("Enter the date you started ART (YYYY-MM-DD): ");
+                newStartedART = Main.getUserInput();
+                newStartedART = newStartedART.isEmpty() ? patientInformationParts[4] : newStartedART;
+
+            }
+        }
+
+        System.out.print("Enter your new country ISO code: ");
+        String newCountryISO = Main.getUserInput();
+        newCountryISO = newCountryISO.isEmpty() ? patientInformationParts[5] : newCountryISO;
+
+        System.out.println();
+        System.out.println("Updating your profile...");
+        System.out.println();
+        String result = Main.callBashScript("user-manager.sh", "update_patient_profile", this.getEmail(),
+                newFirstName,
+                newLastName, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
+        System.out.println(result);
+
+        this.setFirstName(newFirstName);
+        this.setLastName(newLastName);
     }
 
     // Calculates the estimated lifespan of the patient based on HIV status and ART treatment
@@ -212,10 +270,10 @@ public class Patient extends User {
                     calculatedLifespan = defaultLifeSpan - yearsAfterDiagnosis;
                 }
             }
-            return calculatedLifespan;
+            return calculatedLifespan>0?calculatedLifespan:0;
         } else {
             defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth());
-            return defaultLifeSpan;
+            return defaultLifeSpan>0?defaultLifeSpan:0;
         }
     }
 

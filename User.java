@@ -30,6 +30,31 @@ public abstract class User {
         return email;
     }
 
+    // Setter for firstName
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    // Setter for lastName
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    // Setter for email
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // Setter for password
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    // Setter for userRole
+    public void setUserRole(UserRoles userRole) {
+        this.userRole = userRole;
+    }
+
     // Getter for password
     public String getPassword() {
         return password;
