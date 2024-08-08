@@ -181,22 +181,36 @@ public class Patient extends User {
 
         // Get country-specific life expectancy and calculate default lifespan
         float countryLifeExpectancy = Float.parseFloat(Main.callBashScript("user-manager.sh", "get_country_lifespan", getCountryISO()));
+        // declare the number of years that was remaining to reach the lifespan before testing HIV Positive
         float defaultLifeSpan;
 
         // Calculate lifespan based on HIV status and ART treatment
         if (getHasHIV().equals("yes")) {
             float calculatedLifespan;
-            if (getIsOnART().equals("yes")) {
-                // calculating the number of years that was remaining to reach the lifespan before testing HIV Positive
-                defaultLifeSpan = countryLifeExpectancy - (float) Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate()); 
 
+            defaultLifeSpan = countryLifeExpectancy - Main.calculateDateDifference(getDateOfBirth(), getDiagnosisDate());
+            
+            if (getIsOnART().equals("yes")) {
                 // calculating the number of years delayed before taking ART
                 int delayBeforeART = Main.calculateDateDifference(getDiagnosisDate(), getStartedART());
                 
+                // calculating the number of years taking ART
+                int yearsOnART = Main.calculateDateDifference(getStartedART());
+                
                 // calculate lifespan by applying the formula
                 calculatedLifespan = (float) (defaultLifeSpan * factor * Math.pow(factor, delayBeforeART));
+
+                // subtract years lived after testing HIV Positive
+                calculatedLifespan -= yearsOnART;
             } else {
-                calculatedLifespan = maxNotOnART - Main.calculateDateDifference(getDiagnosisDate());
+                int yearsAfterDiagnosis = Main.calculateDateDifference(getDiagnosisDate());
+                if(defaultLifeSpan > maxNotOnART){
+                    // There were more than 5 years to live
+                    calculatedLifespan = maxNotOnART - yearsAfterDiagnosis;
+                }else{
+                    // There were less than 5 years to live
+                    calculatedLifespan = defaultLifeSpan - yearsAfterDiagnosis;
+                }
             }
             return calculatedLifespan;
         } else {
