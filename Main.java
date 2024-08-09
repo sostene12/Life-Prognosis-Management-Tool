@@ -22,17 +22,7 @@ public class Main {
         while (true) {
             if (currentUser == null) {
                 // Display main menu options
-                String newOne = "\n" +
-                        "  ____    _____    _____    ____    _  __  ______     ____  \n" +
-                        " |  _ \\  |_   _|  / ____|  / __ \\  | |/ / |  ____|   |___ \\ \n" +
-                        " | |_) |   | |   | (___   | |  | | | ' /  | |__        __) |\n" +
-                        " |  _ <    | |    \\___ \\  | |  | | |  <   |  __|      |__ < \n" +
-                        " | |_) |  _| |_   ____) | | |__| | | . \\  | |____     ___) |\n" +
-                        " |____/  |_____| |_____/   \\____/  |_|\\_\\ |______|   |____/ \n" +
-                        "                                                            \n" +
-                        "                                                            ";
-
-                System.out.println(newOne);
+                showLogo();
                 System.out.println();
                 System.out.println(
                         "______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
@@ -235,4 +225,18 @@ public class Main {
         int diff = finalLocalDate.getYear() - initialLocalDate.getYear();
         return diff;
     }
+
+    public static void showLogo() {
+        String teamLogo = "\n" +
+                "  ____    _____    _____    ____    _  __  ______     ____  \n" +
+                " |  _ \\  |_   _|  / ____|  / __ \\  | |/ / |  ____|   |___ \\ \n" +
+                " | |_) |   | |   | (___   | |  | | | ' /  | |__        __) |\n" +
+                " |  _ <    | |    \\___ \\  | |  | | |  <   |  __|      |__ < \n" +
+                " | |_) |  _| |_   ____) | | |__| | | . \\  | |____     ___) |\n" +
+                " |____/  |_____| |_____/   \\____/  |_|\\_\\ |______|   |____/ \n" +
+                "                                                            \n" +
+                "                                                            ";
+        System.out.println(teamLogo);
+    }
+
 }
