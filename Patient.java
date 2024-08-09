@@ -176,6 +176,10 @@ public class Patient extends User {
         String newLastName = Main.getUserInput();
         newLastName = newLastName.isEmpty() ? getLastName() : newLastName;
 
+        System.out.print("Enter new password:");
+        String newPassword = Main.getUserInput();
+        newPassword = newPassword.isEmpty() ? getPassword() : newPassword;
+
         System.out.print("Enter your new DOB (YYYY-MM-DD): ");
         String newDOB = Main.getUserInput();
         newDOB = newDOB.isEmpty() ? patientInformationParts[0] : newDOB;
@@ -212,7 +216,7 @@ public class Patient extends User {
         System.out.println();
         String result = Main.callBashScript("user-manager.sh", "update_patient_profile", this.getEmail(),
                 newFirstName,
-                newLastName, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
+                newLastName,newPassword, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
         System.out.println(result);
 
         this.setFirstName(newFirstName);

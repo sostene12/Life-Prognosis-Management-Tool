@@ -203,12 +203,13 @@ update_patient_profile(){
     local email=$1
     local firstName=$2
     local lastName=$3
-    local dob=$4
-    local hasHIV=$5
-    local diagnosisDate=$6
-    local isOnART=$7
-    local startedART=$8
-    local countryISO=$9
+    local password=$4
+    local dob=$5
+    local hasHIV=$6
+    local diagnosisDate=$7
+    local isOnART=$8
+    local startedART=$9
+    local countryISO=${10}
 
     # Check if the user exists
     local user_line
@@ -221,12 +222,16 @@ update_patient_profile(){
 
     # Extract the user's uuid and other existing data
     local uuid
-    local existing_password
     local existing_registered
     IFS=':' read -r _ _ _ uuid _ existing_password existing_registered <<< "$user_line"
 
+    # Update password only if a new one is provided
+    local new_password=${password:-$existing_password}
+    local new_hashed_password
+    new_hashed_password=$(hash_password "$new_password")
+
     # Update user-store.txt while preserving existing data
-    sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:$existing_password:$existing_registered/" "$USER_STORE"
+    sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:$new_hashed_password:$existing_registered/" "$USER_STORE"
 
     # Get current patient data
     local current_patient_data
@@ -264,7 +269,6 @@ update_patient_profile(){
 
     echo "Profile updated successfully!"
 }
-
 # Function to export user data to a CSV file
 export_user_data() {
     local patient_file=$1
