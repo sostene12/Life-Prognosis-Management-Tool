@@ -72,7 +72,8 @@ public abstract class User {
 
     // Static method for logging out
     public static void logout() {
-        System.out.println("Logged out.");
+        Main.clearScreen();
+        System.out.println(Main.GREEN+"\u2714 Logged out."+Main.RESET);
     }
 
     // Abstract method to be implemented by subclasses for viewing profile

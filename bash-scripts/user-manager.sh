@@ -262,7 +262,7 @@ update_patient_profile(){
         echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> "$PATIENT_STORE"
     fi
 
-    echo "Profile updated successfully!"
+    echo "OK"
 }
 
 # Function to export user data to a CSV file

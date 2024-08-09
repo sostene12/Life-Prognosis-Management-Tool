@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.util.Date;
 
 public class Patient extends User {
@@ -9,7 +10,7 @@ public class Patient extends User {
     private Date startedART;
     private String countryISO;
 
-    // Constructor for Patient class, initializing the user with the Patient role
+    // Constructor for  exports/analytics_2024-08-09_16:06:28.csvPatient class, initializing the user with the Patient role
     public Patient(String firstName, String lastName, String email, String password) {
         super(firstName, lastName, email, password, UserRoles.PATIENT);
     }
@@ -70,6 +71,8 @@ public class Patient extends User {
 
     // Completes the registration process for a patient
     public static void completeRegistration() {
+        Console console = System.console();
+        System.out.println("\n_______________________\nCompleting Registration\n_______________________");
         // Prompt user for UUID and email
         System.out.print("Enter UUID: ");
         String uuid = Main.getUserInput();
@@ -78,11 +81,14 @@ public class Patient extends User {
 
         // Check UUID validity and registration status
         String uuidCheckResult = Main.callBashScript("user-manager.sh", "check_uuid", uuid, email);
+        
         if (uuidCheckResult.equals("1")) {
-            System.out.println("Info: Registration already done.");
+            Main.clearScreen();
+            System.out.println(Main.RED+"\u2139 Info: Registration already done."+Main.RESET);
             return; 
         } else if (uuidCheckResult.equals("2")) {
-            System.out.println("Info: Authentication failed.");
+            Main.clearScreen();
+            System.out.println(Main.RED+"\u2139 Info: Authentication failed."+Main.RESET);
             return;
         }
 
@@ -118,7 +124,8 @@ public class Patient extends User {
         System.out.print("Enter country ISO code: ");
         String countryISO = Main.getUserInput();
         System.out.print("Enter password: ");
-        String password = Main.getUserInput();
+        char[] passwordArray = console.readPassword();
+        String password = new String(passwordArray);
 
         // Register patient via bash script
         String result = Main.callBashScript("user-manager.sh", "complete_registration", uuid, firstName, lastName, dob, hasHIV ? "yes" : "no", diagnosisDate, isOnART ? "yes" : "no", startedART, countryISO, password);
@@ -142,17 +149,18 @@ public class Patient extends User {
         setStartedART(Main.parseDate(patientInformationParts[4]));
         setCountryISO(patientInformationParts[5]);
         
+        Main.clearScreen();
         // Display patient profile information
-        System.out.println("My Profile\n______________________________\n");
-        System.out.println("Firstname: " + getFirstName());
-        System.out.println("Lastname: " + getLastName());
-        System.out.println("Email: " + getEmail());
-        System.out.println("Date of birth: " + getDateOfBirth());
-        System.out.println("HIV status: " + getHasHIV());
-        System.out.println("Diagnosis Date: " + getDiagnosisDate());
-        System.out.println("ART status: " + getIsOnART());
-        System.out.println("Date - ART: " + getStartedART());
-        System.out.println("Country: " + getCountryISO());
+        System.out.println("My Profile\n_______________________\n");
+        System.out.println("Firstname: " +Main.GREEN+ getFirstName()+Main.RESET);
+        System.out.println("Lastname: " +Main.GREEN+ getLastName()+Main.RESET);
+        System.out.println("Email: " +Main.GREEN+ getEmail()+Main.RESET);
+        System.out.println("Date of birth: " +Main.GREEN+ getDateOfBirth()+Main.RESET);
+        System.out.println("HIV status: " +Main.GREEN+ getHasHIV()+Main.RESET);
+        System.out.println("Diagnosis Date: " +Main.GREEN+ getDiagnosisDate()+Main.RESET);
+        System.out.println("ART status: " +Main.GREEN+ getIsOnART()+Main.RESET);
+        System.out.println("Date - ART: " +Main.GREEN+ getStartedART()+Main.RESET);
+        System.out.println("Country: " +Main.GREEN+ getCountryISO()+Main.RESET);
         System.out.println("_______________________");
     }
 
@@ -166,7 +174,7 @@ public class Patient extends User {
         String patientInformation = Main.callBashScript("user-manager.sh", "get_patient_info", uuid);
         String[] patientInformationParts = patientInformation.split(":");
 
-        System.out.println("Current information (press Enter to keep current value):");
+        System.out.println(Main.GREEN+"Current information (press Enter to keep current value):"+Main.RESET);
 
         System.out.print("Enter your new first name: ");
         String newFirstName = Main.getUserInput();
@@ -208,12 +216,17 @@ public class Patient extends User {
         newCountryISO = newCountryISO.isEmpty() ? patientInformationParts[5] : newCountryISO;
 
         System.out.println();
-        System.out.println("Updating your profile...");
+        System.out.println("Updating your profile...\n ");
         System.out.println();
         String result = Main.callBashScript("user-manager.sh", "update_patient_profile", this.getEmail(),
                 newFirstName,
                 newLastName, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
-        System.out.println(result);
+        if(result.equals("OK")){
+            System.out.println(Main.GREEN+"\u2714 Profile updated successfully"+Main.RESET);
+        }else{
+            System.out.println(Main.GREEN+"\u274C Failed to update profile"+Main.RESET);
+        }
+
 
         this.setFirstName(newFirstName);
         this.setLastName(newLastName);
@@ -279,6 +292,7 @@ public class Patient extends User {
 
     // Displays the estimated lifespan of the patient
     public void viewLifespan() {
+        Main.clearScreen();
         float lifespan = this.calculateLifespan();
         System.out.println("______________________________\nYour Estimated Lifespan is " + lifespan + " years\n______________________________");
     }

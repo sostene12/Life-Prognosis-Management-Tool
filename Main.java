@@ -4,17 +4,20 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.io.Console;
 
 public class Main {
     private static User currentUser = null;
-
+    static final String RESET = "\033[0m";
+    static final String RED = "\033[0;31m";
+    static final String GREEN = "\033[0;32m";
     public static void main(String[] args) {
+        Main.clearScreen();
         // Initialize user store with admin user if it doesn't exist
         callBashScript("user-manager.sh", "initialize_user_store");
 
@@ -22,11 +25,11 @@ public class Main {
         while (true) {
             if (currentUser == null) {
                 // Display main menu options
-                System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
+                System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n"+Main.GREEN+">>HOME"+Main.RESET+"\n______________________________");
                 System.out.println("1. Login");
                 System.out.println("2. Complete Registration");
                 System.out.println("3. Exit");
-                System.out.print("___________________________\nChoose an option: ");
+                System.out.print("_______________________\n"+Main.GREEN+"Choose an option: "+Main.RESET);
                 String option = Main.getUserInput();
                 System.out.println("_______________________");
 
@@ -41,7 +44,7 @@ public class Main {
                     case "3":
                         System.exit(0); // Exit the application
                     default:
-                        System.out.println("Invalid option");
+                        System.out.println(Main.RED+"\u274C Invalid option"+Main.RESET);
                 }
             } else {
                 // Redirect to appropriate menu based on user role
@@ -55,10 +58,13 @@ public class Main {
     }
 
     private static User loginUser() {
+        System.out.println("\n________ Log in ________");
+        Console console = System.console();
         System.out.print("Enter your email: ");
         String email = Main.getUserInput();
         System.out.print("Enter your password: ");
-        String password = Main.getUserInput();
+        char[] passwordArray = console.readPassword();
+        String password = new String(passwordArray);
 
         // Call Bash script to authenticate user
         String userData = User.login(email, password);
@@ -70,14 +76,18 @@ public class Main {
             String firstName = parts[1];
             String lastName = parts[2];
 
+            
             // Create and return user object based on role
             if (userRole.equals("Admin")) {
+                Main.clearScreen();
                 return new Admin(firstName, lastName, email, password);
             } else {
+                Main.clearScreen();
                 return new Patient(firstName, lastName, email, password);
             }
         } else {
-            System.out.println("Incorrect email or password.");
+            Main.clearScreen();
+            System.out.println(Main.RED+"\u274C Incorrect email or password."+Main.RESET);
             return null;
         }
     }
@@ -85,13 +95,12 @@ public class Main {
     private static void adminMenu(Admin admin) {
         while (true) {
             // Display admin menu options
-            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
-            System.out.println("Hello, "+admin.getFirstName());
+            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n"+Main.GREEN+"ADMIN,"+admin.getFirstName()+""+Main.RESET+"\n______________________________");
             System.out.println("1. Initiate Patient Registration");
             System.out.println("2. Export User Data");
             System.out.println("3. Export Analytics");
             System.out.println("4. Logout");
-            System.out.print("_______________________\nChoose an option: ");
+            System.out.print("_______________________\n"+Main.GREEN+"Choose an option: "+Main.RESET);
             String option = Main.getUserInput();
             System.out.println("_______________________");
 
@@ -111,7 +120,10 @@ public class Main {
                     User.logout();
                     return; // Return to the main loop
                 default:
-                    System.out.println("Invalid option");
+                {
+                    Main.clearScreen();
+                    System.out.println(Main.RED+"\u274C Invalid option"+Main.RESET);
+                }
             }
         }
     }
@@ -119,13 +131,12 @@ public class Main {
     public static void patientMenu(Patient patient) {
         while (true) {
             // Display patient menu options
-            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
-            System.out.println("Hello, "+patient.getFirstName());
+            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n"+Main.GREEN+"PATIENT,"+patient.getFirstName()+""+Main.RESET+"\n______________________________");
             System.out.println("1. View Profile");
             System.out.println("2. Update Profile");
             System.out.println("3. View Lifespan");
             System.out.println("4. Logout");
-            System.out.print("_______________________\nChoose an option: ");
+            System.out.print("_______________________\n"+Main.GREEN+"Choose an option: "+Main.RESET);
             String option = Main.getUserInput();
             System.out.println("_______________________");
 
@@ -145,7 +156,7 @@ public class Main {
                     User.logout();
                     return; // Return to the main loop
                 default:
-                    System.out.println("Invalid option");
+                System.out.println(Main.RED+"\u274C Invalid option"+Main.RESET);
             }
         }
     }
@@ -220,4 +231,18 @@ public class Main {
         int diff = finalLocalDate.getYear() - initialLocalDate.getYear();
         return diff;
     }
+
+    public static void clearScreen() {  
+        try {
+            String os = System.getProperty("os.name");
+            if (os.contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            System.out.println("Error clearing screen: " + e.getMessage());
+        }
+    } 
 }
