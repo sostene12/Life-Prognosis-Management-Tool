@@ -1,2 +1,2 @@
-hirwa:jc:admin@admin.com:5d4856ec-711f-4ba8-afcc-bce27a13e8c7:Admin:9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c:1
-HIGWA:JA:hico:2142d6b5-f1ab-4cf8-98a1-c3b2cd25c108:Patient:5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5:1
+Admin:jc:admin@admin.com:a9372ddc-d94b-43ab-bede-a95796040231:Admin:9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c:1
+Kwizera:Olivier:kwizera@gmail.com:eb0d4fc4-85e2-48c8-817b-3325c1dd08ad:Patient:5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5:1

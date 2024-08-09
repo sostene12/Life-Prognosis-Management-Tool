@@ -22,7 +22,20 @@ public class Main {
         while (true) {
             if (currentUser == null) {
                 // Display main menu options
-                System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
+                String newOne = "\n" +
+                        "  ____    _____    _____    ____    _  __  ______     ____  \n" +
+                        " |  _ \\  |_   _|  / ____|  / __ \\  | |/ / |  ____|   |___ \\ \n" +
+                        " | |_) |   | |   | (___   | |  | | | ' /  | |__        __) |\n" +
+                        " |  _ <    | |    \\___ \\  | |  | | |  <   |  __|      |__ < \n" +
+                        " | |_) |  _| |_   ____) | | |__| | | . \\  | |____     ___) |\n" +
+                        " |____/  |_____| |_____/   \\____/  |_|\\_\\ |______|   |____/ \n" +
+                        "                                                            \n" +
+                        "                                                            ";
+
+                System.out.println(newOne);
+                System.out.println();
+                System.out.println(
+                        "______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
                 System.out.println("1. Login");
                 System.out.println("2. Complete Registration");
                 System.out.println("3. Exit");
@@ -85,8 +98,9 @@ public class Main {
     private static void adminMenu(Admin admin) {
         while (true) {
             // Display admin menu options
-            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
-            System.out.println("Hello, "+admin.getFirstName());
+            System.out.println(
+                    "______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
+            System.out.println("Hello, " + admin.getFirstName());
             System.out.println("1. Initiate Patient Registration");
             System.out.println("2. Export User Data");
             System.out.println("3. Export Analytics");
@@ -119,8 +133,9 @@ public class Main {
     public static void patientMenu(Patient patient) {
         while (true) {
             // Display patient menu options
-            System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
-            System.out.println("Hello, "+patient.getFirstName());
+            System.out.println(
+                    "______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n______________________________");
+            System.out.println("Hello, " + patient.getFirstName());
             System.out.println("1. View Profile");
             System.out.println("2. Update Profile");
             System.out.println("3. View Lifespan");
