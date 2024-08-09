@@ -9,13 +9,22 @@ public class Admin extends User {
     // Initializes registration
     public void initializeRegistration() {
         System.out.print("Enter patient's email: ");
-        // Get user input for email
         String email = Main.getUserInput();
+    
+        // Validate email
+        while (!Main.isValidEmail(email)) {
+            System.out.println(Main.RED+"Invalid email format. "+Main.RESET+"\nPlease enter a valid email: ");
+            email = Main.getUserInput();
+        }
+    
         // Generate a unique identifier
         String uuid = Main.generateUUID();
+    
         // Call bash script to register the patient
         String result = Main.callBashScript("user-manager.sh", "register_patient", email, uuid);
+    
         // Print the result of the registration
+        Main.clearScreen();
         System.out.println(result);
     }
 
