@@ -238,6 +238,7 @@ public class Main {
         return diff;
     }
 
+    // function to show system logo
     public static void showLogo() {
         String teamLogo = "\n" +
                 "  ____    _____    _____    ____    _  __  ______     ____  \n" +
@@ -251,6 +252,7 @@ public class Main {
         System.out.println(teamLogo);
     }
 
+    // function to clear screen
     public static void clearScreen() {  
         try {
             String os = System.getProperty("os.name");
@@ -265,6 +267,7 @@ public class Main {
         }
     } 
 
+    // function to validate email
     public static boolean isValidEmail(String email) {
         String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
         Pattern pattern = Pattern.compile(emailRegex);
@@ -272,10 +275,12 @@ public class Main {
         return matcher.matches();
     }
 
+    // function to validate names
     public static boolean isValidName(String nameString) {
         return nameString != null && !nameString.trim().isEmpty() && nameString.matches("[a-zA-Z]+");
     }
 
+    // function to validate date of birth
     public static boolean isValidDateOfBirth(String dob) {
         if (dob == null || dob.trim().isEmpty()) {
             return false;
@@ -294,15 +299,18 @@ public class Main {
         }
     }
 
+    // function to validate yes or no inputs
     public static boolean isValidInput(String hivStatus) {
         return "yes".equalsIgnoreCase(hivStatus) || "no".equalsIgnoreCase(hivStatus);
     }
     
+    // function to validate diagnosis date
     public static boolean isValidDiagnosisDate(String diagnosisDate, String dob) {
         LocalDate dobDate = LocalDate.parse(dob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return isValidDate(diagnosisDate, dobDate, LocalDate.now());
     }
     
+    // date comparator
     private static boolean isValidDate(String date, LocalDate minDate, LocalDate maxDate) {
         if (date == null || date.trim().isEmpty()) {
             return false;
@@ -326,15 +334,18 @@ public class Main {
         }
     }
 
+    // function to validate date order
     public static boolean isValidDateOrder(String startedART, String diagnosisDate) {
         LocalDate diagnosisDDate = LocalDate.parse(diagnosisDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return isValidDate(startedART, diagnosisDDate, LocalDate.now());
     }
 
+    // function to validate country's ISO code
     public static boolean isValidISOCode(String countryISO) {
         return countryISO != null && countryISO.trim().matches("[A-Z]{2,3}");
     }
 
+    // function to validate password
     public static boolean isValidPassword(String password) {
         return password != null && !password.trim().isEmpty();
     }

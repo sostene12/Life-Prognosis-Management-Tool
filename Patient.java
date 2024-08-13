@@ -375,7 +375,7 @@ public class Patient extends User {
         System.out.println(this.getEmail()+"-"+ newFirstName+"-"+  newLastName+"-"+  newDOB+"-"+  newHIVStatus+"-"+  newDiagnosisDate+"-"+  newARTStatus+"-"+  newStartedART+"-"+  newCountryISO);
 
         String result = Main.callBashScript("user-manager.sh", "update_patient_profile", this.getEmail(), newFirstName, newLastName, newPassword, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
-        System.out.println(result);
+        
         if(result.equals("OK")){
             System.out.println(Main.GREEN+"\u2714 Profile updated successfully"+Main.RESET);
         }else{

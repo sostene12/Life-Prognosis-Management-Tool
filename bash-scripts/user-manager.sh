@@ -215,18 +215,16 @@ update_patient_profile() {
     local new_hashed_password
     new_hashed_password=$(hash_password "$password")
 
-    # Prepare the new user entry while preserving the role
+    # Prepare the new user entry while preserving the role and UUID
     local user_entry="${firstName}:${lastName}:${email}:${uuid}:${role}:${new_hashed_password}:1"
     local patient_entry="${uuid}:${dob}:${hasHIV}:${diagnosisDate}:${isOnART}:${startedART}:${countryISO}"
 
-echo "$patient_entry";
-    # Update the user store
+    # Update stores
     if grep -q "$email" "$USER_STORE"; then
-        # Update the existing user and record
+        # Update the existing user record
         sed -i "s/^.*:$email:.*$/${user_entry}/" "$USER_STORE"
-
+        # Update the existing patient record
         sed -i "/$uuid/c\\${patient_entry}" "$PATIENT_STORE"
-
 
         echo "OK"
     fi
