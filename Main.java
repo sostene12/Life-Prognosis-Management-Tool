@@ -342,7 +342,8 @@ public class Main {
 
     // function to validate country's ISO code
     public static boolean isValidISOCode(String countryISO) {
-        return countryISO != null && countryISO.trim().matches("[A-Z]{2,3}");
+        String ISOCODE = Main.callBashScript("validation-functions.sh", "validateISO", countryISO);
+        return countryISO != null && countryISO.trim().matches("[A-Z]{2,3}") && countryISO.equals(ISOCODE);
     }
 
     // function to validate password
