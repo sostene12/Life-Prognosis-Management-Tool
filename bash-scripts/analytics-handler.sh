@@ -100,10 +100,9 @@ while IFS=: read -r uuid dob hasHIV diagnosisDate isOnART startedART countryISO;
         # Convert lifespan to an absolute value before writing to TEMP_FILE
         lifespan=$(echo "$lifespan" | bc -l)
         abs_lifespan=$(echo "$lifespan" | awk '{print ($1 < 0 ? -$1 : $1)}')
-        echo "$countryISO,$abs_lifespan" >> "$TEMP_FILE"
 
         # Accumulate lifespan by country
-        echo "$countryISO,$lifespan" >> "$TEMP_FILE"
+        echo "$countryISO,$abs_lifespan" >> "$TEMP_FILE"
     fi
 done < "$INPUT_FILE"
 

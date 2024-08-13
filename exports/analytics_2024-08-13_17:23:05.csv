@@ -1,0 +1,30 @@
+Metric,Value
+Total records,501
+HIV status: yes,501
+HIV status: no,0
+ART status: yes,0
+ART status: no,0
+Country ISO (HIV positive),Count
+Country ISO: EG,46
+Country ISO: GH,56
+Country ISO: KE,48
+Country ISO: NG,43
+Country ISO: RW,55
+Country ISO: RW8b8014da-65f7-4420-a49a-e9ff95ef3a6a,1
+Country ISO: SD,55
+Country ISO: SN,48
+Country ISO: TZ,60
+Country ISO: UG,49
+Country ISO: ZA,40
+Country ISO,Average Lifespan (years)
+SN,2.40925e-06
+EG,6.579e-07
+RW,0.0958139
+SD,1.63006e-05
+UG,1.99041e-05
+TZ,485.338
+KE,-4.195e-07
+NG,-3.99e-08
+ZA,-9.02945e-06
+GH,2.8716e-06
+RW8b8014da-65f7-4420-a49a-e9ff95ef3a6a:1950-01-01:yes:2000-01-01:yes:2005-01-01:EG,0
