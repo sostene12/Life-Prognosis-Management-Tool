@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +29,8 @@ public class Main {
         while (true) {
             if (currentUser == null) {
                 // Display main menu options
+                showLogo();
+                System.out.println();
                 System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n"+Main.GREEN+">>HOME"+Main.RESET+"\n______________________________");
                 System.out.println("1. Login");
                 System.out.println("2. Complete Registration");
@@ -234,6 +238,19 @@ public class Main {
         return diff;
     }
 
+    public static void showLogo() {
+        String teamLogo = "\n" +
+                "  ____    _____    _____    ____    _  __  ______     ____  \n" +
+                " |  _ \\  |_   _|  / ____|  / __ \\  | |/ / |  ____|   |___ \\ \n" +
+                " | |_) |   | |   | (___   | |  | | | ' /  | |__        __) |\n" +
+                " |  _ <    | |    \\___ \\  | |  | | |  <   |  __|      |__ < \n" +
+                " | |_) |  _| |_   ____) | | |__| | | . \\  | |____     ___) |\n" +
+                " |____/  |_____| |_____/   \\____/  |_|\\_\\ |______|   |____/ \n" +
+                "                                                            \n" +
+                "                                                            ";
+        System.out.println(teamLogo);
+    }
+
     public static void clearScreen() {  
         try {
             String os = System.getProperty("os.name");
@@ -253,5 +270,72 @@ public class Main {
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public static boolean isValidName(String nameString) {
+        return nameString != null && !nameString.trim().isEmpty() && nameString.matches("[a-zA-Z]+");
+    }
+
+    public static boolean isValidDateOfBirth(String dob) {
+        if (dob == null || dob.trim().isEmpty()) {
+            return false;
+        }
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate parsedDate = LocalDate.parse(dob, dateFormatter);
+            LocalDate today = LocalDate.now();
+            LocalDate hundredYearsAgo = today.minusYears(100);
+
+            // The date must be within the last 100 years and not in the future
+            return !parsedDate.isAfter(today) && !parsedDate.isBefore(hundredYearsAgo);
+        } catch (DateTimeParseException e) {
+            return false; // Invalid format or invalid date
+        }
+    }
+
+    public static boolean isValidInput(String hivStatus) {
+        return "yes".equalsIgnoreCase(hivStatus) || "no".equalsIgnoreCase(hivStatus);
+    }
+    
+    public static boolean isValidDiagnosisDate(String diagnosisDate, String dob) {
+        LocalDate dobDate = LocalDate.parse(dob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return isValidDate(diagnosisDate, dobDate, LocalDate.now());
+    }
+    
+    private static boolean isValidDate(String date, LocalDate minDate, LocalDate maxDate) {
+        if (date == null || date.trim().isEmpty()) {
+            return false;
+        }
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate parsedDate = LocalDate.parse(date, dateFormatter);
+
+            if (minDate != null && parsedDate.isBefore(minDate)) {
+                return false;
+            }
+
+            if (maxDate != null && parsedDate.isAfter(maxDate)) {
+                return false;
+            }
+
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    public static boolean isValidDateOrder(String startedART, String diagnosisDate) {
+        LocalDate diagnosisDDate = LocalDate.parse(diagnosisDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return isValidDate(startedART, diagnosisDDate, LocalDate.now());
+    }
+
+    public static boolean isValidISOCode(String countryISO) {
+        return countryISO != null && countryISO.trim().matches("[A-Z]{2,3}");
+    }
+
+    public static boolean isValidPassword(String password) {
+        return password != null && !password.trim().isEmpty();
     }
 }

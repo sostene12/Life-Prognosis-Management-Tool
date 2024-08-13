@@ -79,23 +79,12 @@ complete_registration() {
     local password=${10}
     local registered=1
 
-    # Validate inputs
-    validate_firstName "$firstName"
-    validate_lastName "$lastName"
-    validate_dob "$dob"
-    validate_hasHIV "$hasHIV"
-    validate_diagnosisDate "$diagnosisDate"
-    validate_isOnART "$isOnART"
-    validate_startedART "$startedART"
-    validate_countryISO "$countryISO"
-    validate_password "$password"
-
     # Prepare to update user and patient data
     local hashed_password
     hashed_password=$(hash_password "$password")
 
-    [ "$diagnosisDate" = "null" ] && diagnosisDate=""
-    [ "$startedART" = "null" ] && startedART=""
+    [ "$diagnosisDate" = "null" ] && diagnosisDate="null"
+    [ "$startedART" = "null" ] && startedART="null"
 
     # Append patient information to the patient store
     echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> $PATIENT_STORE
@@ -198,72 +187,51 @@ get_country_lifespan(){
     fi
 }
 
+get_role() {
+    # Retrieves the role from the user_store
+    local email=$1
+    grep "$email" "$USER_STORE" | cut -d: -f5
+}
 
-update_patient_profile(){
+
+update_patient_profile() {
     local email=$1
     local firstName=$2
     local lastName=$3
-    local dob=$4
-    local hasHIV=$5
-    local diagnosisDate=$6
-    local isOnART=$7
-    local startedART=$8
-    local countryISO=$9
+    local password=$4
+    local dob=$5
+    local hasHIV=$6
+    local diagnosisDate=$7
+    local isOnART=$8
+    local startedART=$9
+    local countryISO=${10}
 
-    # Check if the user exists
-    local user_line
-    user_line=$(grep ":$email:" "$USER_STORE")
+    # Extract the user's uuid and role from the existing data
+    local uuid role
+    uuid=$(get_uuid "$email")
+    role=$(get_role "$email")
 
-    if [[ -z "$user_line" ]]; then
-        echo "Error: User with email $email not found."
-        exit 1
+    # Hash the new password
+    local new_hashed_password
+    new_hashed_password=$(hash_password "$password")
+
+    # Prepare the new user entry while preserving the role
+    local user_entry="${firstName}:${lastName}:${email}:${uuid}:${role}:${new_hashed_password}:1"
+    local patient_entry="${uuid}:${dob}:${hasHIV}:${diagnosisDate}:${isOnART}:${startedART}:${countryISO}"
+
+echo "$patient_entry";
+    # Update the user store
+    if grep -q "$email" "$USER_STORE"; then
+        # Update the existing user and record
+        sed -i "s/^.*:$email:.*$/${user_entry}/" "$USER_STORE"
+
+        sed -i "/$uuid/c\\${patient_entry}" "$PATIENT_STORE"
+
+
+        echo "OK"
     fi
-
-    # Extract the user's uuid and other existing data
-    local uuid
-    local existing_password
-    local existing_registered
-    IFS=':' read -r _ _ _ uuid _ existing_password existing_registered <<< "$user_line"
-
-    # Update user-store.txt while preserving existing data
-    sed -i "s/^.*:$email:.*$/$firstName:$lastName:$email:$uuid:Patient:$existing_password:$existing_registered/" "$USER_STORE"
-
-    # Get current patient data
-    local current_patient_data
-    current_patient_data=$(grep "^$uuid:" "$PATIENT_STORE")
-
-    if [[ -n "$current_patient_data" ]]; then
-        IFS=':' read -r _ current_dob current_hasHIV current_diagnosisDate current_isOnART current_startedART current_countryISO <<< "$current_patient_data"
-
-        # Use current values if new values are empty
-        dob=${dob:-$current_dob}
-        hasHIV=${hasHIV:-$current_hasHIV}
-        countryISO=${countryISO:-$current_countryISO}
-
-        if [[ "$hasHIV" == "yes" ]]; then
-            diagnosisDate=${diagnosisDate:-$current_diagnosisDate}
-            isOnART=${isOnART:-$current_isOnART}
-            startedART=${startedART:-$current_startedART}
-
-            if [[ "$isOnART" == "no" ]]; then
-                startedART="null"
-            fi
-        else
-            # Clear HIV-related data if status changed to "no"
-            diagnosisDate="null"
-            isOnART="null"
-            startedART="null"
-        fi
-
-        # Update patient.txt
-        sed -i "s/^$uuid:.*$/$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO/" "$PATIENT_STORE"
-    else
-        # Add new entry if not exists
-        echo "$uuid:$dob:$hasHIV:$diagnosisDate:$isOnART:$startedART:$countryISO" >> "$PATIENT_STORE"
-    fi
-
-    echo "OK"
 }
+
 
 # Function to export user data to a CSV file
 export_user_data() {
@@ -324,7 +292,7 @@ case $1 in
     "get_country_lifespan")
         get_country_lifespan "$2";;
     "update_patient_profile")
-        update_patient_profile "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" ;;
+        update_patient_profile "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" "${10}" "${11}" ;;
     *)
         echo "Invalid command."
         exit 1
