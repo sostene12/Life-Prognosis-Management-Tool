@@ -44,6 +44,8 @@ public class Admin extends User {
 
     // Exports user data by calling a bash script
     public void exportUserData() {
+        Main.clearScreen();
+        System.out.println(Main.GREEN+"\nExporting........"+Main.RESET);
         // Call bash script to export user data
         String result = Main.callBashScript("user-manager.sh", "export_user_data");
         // Print the result of the export
@@ -53,8 +55,10 @@ public class Admin extends User {
 
     // Exports analytics data by calling a bash script
     public void exportAnalytics() {
+        Main.clearScreen();
+        System.out.println(Main.GREEN+"\nExporting........"+Main.RESET);
         // Call bash script to export analytics data
-        String result = Main.callBashScript("user-manager.sh", "export_analytics");
+        String result = Main.callBashScript("analytics-handler.sh", "");
         // Print the result of the export
         Main.clearScreen();
         System.out.println(Main.GREEN+"\u2714 "+result+""+Main.RESET);

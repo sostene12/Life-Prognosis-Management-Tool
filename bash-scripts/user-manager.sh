@@ -10,9 +10,6 @@ PATIENT_STORE="data-store/patient.txt"
 USER_DATA_CSV="exports/user_data_$timestamp.csv"
 ANALYTICS_CSV="exports/analytics_$timestamp.csv"
 
-# Source external validation functions
-source bash-scripts/validation-functions.sh
-
 # Function to initialize user-store.txt with an admin user
 initialize_user_store() {
     local admin_password="pass123"

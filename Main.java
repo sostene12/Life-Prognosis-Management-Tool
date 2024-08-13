@@ -29,8 +29,8 @@ public class Main {
         while (true) {
             if (currentUser == null) {
                 // Display main menu options
-                showLogo();
-                System.out.println();
+                // showLogo();
+                // System.out.println();
                 System.out.println("______________________________\nLife Prognosis Management Tool \nBy BISOKE TEAM 3\n"+Main.GREEN+">>HOME"+Main.RESET+"\n______________________________");
                 System.out.println("1. Login");
                 System.out.println("2. Complete Registration");

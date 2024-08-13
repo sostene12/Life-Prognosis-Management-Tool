@@ -232,7 +232,7 @@ public class Patient extends User {
         
         Main.clearScreen();
         // Display patient profile information
-        System.out.println("\nMy Profile\n_______________________\n");
+        System.out.println("\n_______________________\nMy Profile\n_______________________\n");
         System.out.println("Firstname: " +Main.GREEN+ getFirstName()+Main.RESET);
         System.out.println("Lastname: " +Main.GREEN+ getLastName()+Main.RESET);
         System.out.println("Email: " +Main.GREEN+ getEmail()+Main.RESET);
@@ -242,6 +242,7 @@ public class Patient extends User {
         System.out.println("ART status: " +Main.GREEN+ getIsOnART()+Main.RESET);
         System.out.println("Date - ART: " +Main.GREEN+ getStartedART()+Main.RESET);
         System.out.println("Country: " +Main.GREEN+ getCountryISO()+Main.RESET);
+        System.out.println("Survival rate: " +Main.GREEN+ this.calculateLifespan()+Main.RESET+" years");
         System.out.println("_______________________");
     }
 
@@ -377,6 +378,7 @@ public class Patient extends User {
         String result = Main.callBashScript("user-manager.sh", "update_patient_profile", this.getEmail(), newFirstName, newLastName, newPassword, newDOB, newHIVStatus, newDiagnosisDate, newARTStatus, newStartedART, newCountryISO);
         
         if(result.equals("OK")){
+            Main.clearScreen();
             System.out.println(Main.GREEN+"\u2714 Profile updated successfully"+Main.RESET);
         }else{
             System.out.println(Main.GREEN+"\u274C Failed to update profile"+Main.RESET);
@@ -466,6 +468,6 @@ public class Patient extends User {
     public void viewLifespan() {
         Main.clearScreen();
         float lifespan = this.calculateLifespan();
-        System.out.println("\n______________________________\nYour Estimated Lifespan is " + lifespan + " years\n______________________________");
+        System.out.println("\n______________________________\n"+Main.GREEN+"Your Estimated Survival rate is " + lifespan + " years"+Main.RESET+"\n______________________________");
     }
 }
