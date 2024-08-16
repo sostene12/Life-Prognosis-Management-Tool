@@ -1,7 +1,7 @@
 # Life Prognosis Management System
 
 ## Description
-This project is intended to calculating the life expectancy of people infected of HIV
+This project is intended to calculating the life expectancy of people with HIV
 
 ## How to Run the Project
 
@@ -16,6 +16,6 @@ This project is intended to calculating the life expectancy of people infected o
     ```
     java Main
     ```
-6. If you have logged in you can export files and find them in `exports` folder and walk through the other features like `initiating patient account` logout and `complete the registration` , after login again as a patient  and from there you can `see lifespan`,`update profile`,`view profile` and logout as well. not to forget there are other additional features like `validation` and `password hiding`.
+6. If you have logged in as Admin, you can export files and find them in `exports` folder.
 
 
