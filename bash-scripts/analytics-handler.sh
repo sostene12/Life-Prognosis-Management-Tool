@@ -67,14 +67,14 @@ total_records=$(wc -l < "$INPUT_FILE")
 echo "Total records,$total_records" >> "$OUTPUT_FILE"
 
 # Count records with HIV
-count_hiv_yes=$(grep ":yes:" "$INPUT_FILE" | wc -l)
-count_hiv_no=$(grep ":no:" "$INPUT_FILE" | wc -l)
+count_hiv_yes=$(awk -F: '$3 == "yes"' "$INPUT_FILE" | wc -l)
+count_hiv_no=$(awk -F: '$3 == "no"' "$INPUT_FILE" | wc -l)
 echo "HIV status: yes,$count_hiv_yes" >> "$OUTPUT_FILE"
 echo "HIV status: no,$count_hiv_no" >> "$OUTPUT_FILE"
 
 # Count records where isOnART is yes or no
-count_art_yes=$(grep ":yes:$" "$INPUT_FILE" | wc -l)
-count_art_no=$(grep ":no:$" "$INPUT_FILE" | wc -l)
+count_art_yes=$(awk -F: '$5 == "yes"' "$INPUT_FILE" | wc -l)
+count_art_no=$(awk -F: '$5 == "no"' "$INPUT_FILE" | wc -l)
 echo "ART status: yes,$count_art_yes" >> "$OUTPUT_FILE"
 echo "ART status: no,$count_art_no" >> "$OUTPUT_FILE"
 
